@@ -31,6 +31,7 @@ class User(db.Model):
     friends = db.relationship('friends', backref='user', lazy='dynamic')
     usersetting = db.relationship(
         'userSetting', backref='user', lazy='dynamic')
+    sport_data = db.relationship('sport', backref='user', lazy='dynamic')
 
     def __init__(
             self, username, password, email, name,
@@ -280,5 +281,33 @@ class userSetting(db.Model):
         self.humi = humi_L
         self.pressure_H = pressure_H
         self.pressure_L = pressure_L
+
+
+class sport(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    datatime = db.Column(db.String(255), nullable=False)
+    device_mac = db.Column(
+        db.String(255), db.ForeignKey('device.device_mac'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    longitude = db.Column(db.String(255), nullable=False)
+    latitude = db.Column(db.String(255), nullable=False)
+    temperature = db.Column(db.String(255), nullable=False)
+    humidity = db.Column(db.String(255), nullable=False)
+    pressure = db.Column(db.String(255), nullable=False)
+    uvIndex = db.Column(db.String(255), nullable=False)
+    distance = db.Column(db.String(255), nullable=False)
+
+    def __init__(self, datatime, device_mac, user_id, longitude,
+                 latitude, temperature, humidity, pressure, uvIndex, distance):
+        self.datatime = datatime
+        self.device_mac = device_mac
+        self.user_id = user_id
+        self.longitude = longitude
+        self.latitude = latitude
+        self.temperature = temperature
+        self.humidity = humidity
+        self.pressure = pressure
+        self.uvIndex = uvIndex
+        self.distance = distance
 # db.drop_all()
 # db.create_all()

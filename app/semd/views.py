@@ -63,6 +63,33 @@ class usrResource(Resource):
             return {'mesg': '数据上传失败!'}, 400
 
 
+class sportResource(Resource):
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('datatime', type=str)
+        parser.add_argument('device_mac', type=str)
+        parser.add_argument('user_id', type=str)
+        parser.add_argument('longitude', type=str)
+        parser.add_argument('latitude', type=str)
+        parser.add_argument('temperature', type=str)
+        parser.add_argument('humidity', type=str)
+        parser.add_argument('pressure', type=str)
+        parser.add_argument('uvIndex', type=str)
+        parser.add_argument('distance', type=str)
+        args = parser.parse_args(strict=True)
+        record = sport(args['datatime'], args['device_mac'],
+                       args['user_id'], args['longitude'], args['latitude'],
+                       args['temperature'], args['humidity'],
+                       args['pressure'], args['uvIndex'], args['distance'])
+        try:
+            db.session.add(record)
+            db.session.commit()
+            return {'mesg': '数据上传成功!'}, 200
+        except:
+            return {'mesg': '数据上传失败!'}, 400
+
+
 class reltiPerson(Resource):
 
     """获取geren用户实时信息"""
