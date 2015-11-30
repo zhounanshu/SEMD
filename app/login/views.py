@@ -4,6 +4,7 @@ from flask import jsonify, g
 from flask.ext.restful import Resource
 from flask.ext.restful import reqparse
 from flask.ext.httpauth import HTTPBasicAuth
+from flask import request
 
 from ..lib.util import *
 from ..models import *
@@ -48,13 +49,13 @@ class user(Resource):
                       args['province'], args['district'], args['sex'])
         try:
             db.session.add(record)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except:
+                return {"mesg": "用户名已被注册!"}, 400
             user_id = record.id
             return {"mesg": "用户注册成功!", "userId": user_id}, 200
         except:
-            user = User.query.filter_by(username=args['username']).first()
-            if user is not None:
-                return {"mesg": "用户名已被注册!"}, 400
             return {'mesg': '用户注册失败!'}
 
     def put(self):

@@ -37,7 +37,7 @@ class friend(Resource):
         if exit is not None:
             return {'mesg': '已经是朋友!'}
         if args['id'] == str(friend.id):
-            return {'mesg': '错误添加方式!'}
+            return {'mesg': '不能和自己成为好友!'}
         record = friends(args['id'], friend.id)
         try:
             db.session.add(record)
@@ -54,7 +54,7 @@ class friend(Resource):
         friend = User.query.filter_by(username=args['friendname']).first()
         if friend.id is None:
             return {'mesg': '该好友还未注册!'}
-        friendShip = friends.query(
+        friendShip = friends.query.filter(
             friends.user_id == args['id'],
             friends.friend_id == friend.id).first()
         try:
