@@ -5,12 +5,6 @@ from itsdangerous import (
     TimedJSONWebSignatureSerializer as
     Serializer, BadSignature, SignatureExpired)
 from . import db
-from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
-
-# app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:marvinzns@localhost/meteor?charset=utf8'
-# db = SQLAlchemy(app)
 
 
 class User(db.Model):
@@ -220,7 +214,8 @@ class usrData(db.Model):
 
 class Img(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(
+        db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
     img_path = db.Column(db.String(255), nullable=False)
 
     def __init__(self, user_id, img_path):
@@ -309,5 +304,3 @@ class sport(db.Model):
         self.pressure = pressure
         self.uvIndex = uvIndex
         self.distance = distance
-# db.drop_all()
-# db.create_all()

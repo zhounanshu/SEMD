@@ -3,6 +3,9 @@
 import urllib2
 import json
 import sys
+import os
+import tempfile
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 url = 'http://61.152.122.112:8080/api/v1/auto_stations/master?appid=bFLKk0uV7IZvzcBoWJ1j&appkey=mXwnhDkYIG6S9iOyqsAW7vPVQ5ZxBe'
@@ -19,3 +22,8 @@ for key in invalid_keys:
     del record[key]
 print json.dumps(record, ensure_ascii=False)
 
+basedir = os.path.split(os.path.realpath(__file__))[0]
+print basedir
+
+folder = tempfile.mkdtemp()
+print folder

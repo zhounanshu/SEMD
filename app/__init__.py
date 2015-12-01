@@ -24,4 +24,6 @@ def create_app(cnf):
     app.register_blueprint(devMonitor)
     from .setting import userSet
     app.register_blueprint(userSet)
+    from .Img import imgBlueprint
+    app.register_blueprint(imgBlueprint)
     return app
