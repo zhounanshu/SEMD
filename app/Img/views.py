@@ -60,7 +60,7 @@ class imgResource(Resource):
             except:
                 exit = Img.query.filter_by(id=id).first()
                 if exit is not None:
-                    return {'mesg': '用户上传头像'}
+                    return {'mesg': '用户上传头像成功'}
                 return {'mesg': '图片上传失败!'}, 400
         else:
             if not f:
