@@ -85,9 +85,9 @@ class imgResource(Resource):
             return {'mesg': '用户还未上传头像!'}, 200
         pic = Image.open(img_inf.img_path)
         w, h = pic.size
-        if (w < int(width)) or (h < int(height)):
-            return {'mesg': '参数不在合理范围!'}, 400
         if (width is not None) and (height is not None):
+            if (w < int(width)) or (h < int(height)):
+                return {'mesg': '参数不在合理范围!'}, 400
             pic = pic.resize((int(width), int(height)), Image.ANTIALIAS)
             prefix = os.path.split(os.path.realpath(__file__))[0] + '/buf/'
             postfix = (img_inf.img_path).split('/')[-1]
