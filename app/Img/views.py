@@ -34,6 +34,7 @@ def delete_file_folder(src):
     if os.path.isdir(src):
         for item in os.listdir(src):
             itemsrc = os.path.join(src, item)
+            print itemsrc
             delete_file_folder(itemsrc)
         try:
             os.rmdir(src)
@@ -91,7 +92,8 @@ class imgResource(Resource):
             prefix = os.path.split(os.path.realpath(__file__))[0] + '/buf/'
             postfix = (img_inf.img_path).split('/')[-1]
             path = prefix + postfix
-            delete_file_folder(path)
+            print prefix
+            delete_file_folder(prefix)
             pic.save(path)
         else:
             path = img_inf.img_path

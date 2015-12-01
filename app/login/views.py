@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import jsonify, g
+from flask import g, jsonify
 from flask.ext.restful import Resource
 from flask.ext.restful import reqparse
 from flask.ext.httpauth import HTTPBasicAuth
-from flask import request
-
 from ..lib.util import *
 from ..models import *
 from . import Login
@@ -87,6 +85,21 @@ class user(Resource):
             return {"mesg": "更新失败!"}, 400
 
 
+class verify_login(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('username', type=str)
+        parser.add_argument('password', type=str)
+        args = parser.parse_args(strict=True)
+        user = User.query.filter_by(username=args['username']).first()
+        if not user:
+            return {'mesg': '用户名输入错误!'}, 401
+        if not user.verify_password(args['password']):
+            return {'mesg': '密码输入错误!'}, 401
+        token = user.generate_auth_token()
+        return {'token': token.decode('ascii'), 'status': 'ok'}, 200
+
+
 @Login.route('/v1/token', methods=['GET'])
 @auth.login_required
 def get_auth_token():
@@ -94,11 +107,11 @@ def get_auth_token():
     return jsonify({'token': token.decode('ascii')})
 
 
-@Login.route('/v1/login', methods=['GET'])
-@auth.login_required
-def login():
-    token = g.user.generate_auth_token()
-    return jsonify({'token': token.decode('ascii'), 'status': 'ok'})
+# @Login.route('/v1/login', methods=['GET'])
+# @auth.login_required
+# def login():
+#     token = g.user.generate_auth_token()
+#     return jsonify({'token': token.decode('ascii'), 'status': 'ok'})
 
 
 @auth.verify_password
@@ -112,3 +125,4 @@ def verify_password(username_or_token, password):
             return False
     g.user = user
     return True
+
