@@ -4,7 +4,6 @@ from flask.ext.restful import Resource
 from flask.ext.restful import reqparse
 from flask import request
 import datetime
-import time
 from ..models import *
 from ..lib.util import *
 
@@ -30,9 +29,9 @@ class devResource(Resource):
         try:
             db.session.add(record)
             db.session.commit()
-            return {'mesg': '数据上传成功!'}, 200
+            return {'status': 'success', 'mesg': '数据上传成功!'}, 200
         except:
-            return {'mesg': '数据上传失败!'}, 400
+            return {'status': 'fail', 'mesg': '数据上传失败!'}, 200
 
 
 class usrResource(Resource):
@@ -58,9 +57,9 @@ class usrResource(Resource):
         try:
             db.session.add(record)
             db.session.commit()
-            return {'mesg': '数据上传成功!'}, 200
+            return {'status': 'success', 'mesg': '数据上传成功!'}, 200
         except:
-            return {'mesg': '数据上传失败!'}, 400
+            return {'status': 'fail', 'mesg': '数据上传失败!'}, 200
 
 
 class sportResource(Resource):
@@ -85,9 +84,9 @@ class sportResource(Resource):
         try:
             db.session.add(record)
             db.session.commit()
-            return {'mesg': '数据上传成功!'}, 200
+            return {'status': 'success', 'mesg': '数据上传成功!'}, 200
         except:
-            return {'mesg': '数据上传失败!'}, 400
+            return {'status': 'fail', 'mesg': '数据上传失败!'}, 200
 
 
 class reltiPerson(Resource):
@@ -99,14 +98,14 @@ class reltiPerson(Resource):
         record = devData.query.filter_by(user_id=user_id).order_by(
             'datatime desc').limit(1)[0]
         if record is None:
-            return {'mesg': '该用户没有上传数据!'}
+            return {'status': 'fail', 'mesg': '该用户没有上传数据!'}
         result = {}
         result['temperature'] = record.temperature
         result['humidity'] = record.humidity
         result['pressure'] = record.pressure
         result['uvIndex'] = record.uvIndex
         result['datatime'] = record.datatime
-        return result, 200
+        return {'status': 'success', "data": result}
 
 
 class reltiPeople(Resource):
@@ -121,7 +120,7 @@ class reltiPeople(Resource):
         data_list = devData.query.filter(devData.datatime >= start_time,
                                          devData.datatime <= end_time).all()
         if len(data_list) == 0:
-            return {'mesg': '没有用户上传数据'}
+            return {'status': 'fail', 'mesg': '没有用户上传数据'}
         user_list = []
         for user in data_list:
             user_list.append(user.user_id)
@@ -135,7 +134,7 @@ class reltiPeople(Resource):
             del buf['user_id']
             del buf['device_mac']
             result.append(buf)
-        return result, 200
+        return {'status': 'fail', "data": result}
 
 
 class env_history(Resource):
@@ -145,11 +144,11 @@ class env_history(Resource):
         item = request.args['item']
         items = set(['tempe', 'humi', 'uv'])
         if item not in items:
-            return {'mesg': 'url参数错误!'}, 200
+            return {'status': 'fail', 'mesg': 'url参数错误!'}, 200
         record = devData.query.filter_by(
             user_id=id).order_by('datatime desc').first()
         if record is None:
-            return {'mesg': '你还未使用设备!'}, 200
+            return {'status': 'fail', 'mesg': '你还未使用设备!'}, 200
         base_time = datetime.datetime.strptime(
             record.datatime, "%Y-%m-%d %H:%M:%S")
         start_time = base_time - datetime.timedelta(days=1)
@@ -163,7 +162,7 @@ class env_history(Resource):
                 t_buf['time'] = result.datatime
                 t_buf['tempe'] = result.temperature
                 tempe_list.append(t_buf)
-            return tempe_list, 200
+            return {'status': 'success', "data": tempe_list}
         if item == 'humi':
             humi_list = []
             for result in results:
@@ -171,7 +170,7 @@ class env_history(Resource):
                 h_buf['time'] = result.datatime
                 h_buf['humi'] = result.humidity
                 humi_list.append(h_buf)
-            return humi_list, 200
+            return {'status': 'success', "data": humi_list}
         if item == 'uv':
             uv_list = []
             for result in results:
@@ -179,4 +178,4 @@ class env_history(Resource):
                 u_buf['time'] = result.datatime
                 u_buf['uv'] = result.uvIndex
                 uv_list.append(u_buf)
-            return uv_list, 200
+            return {'status': 'success', "data": uv_list}

@@ -22,8 +22,8 @@ class userView(Resource):
         userInfor['district'] = user.district
         userInfor['sex'] = user.sex
         if user is None:
-            return {"error": "该用户不存在!"}
-        return {"data": userInfor}, 200
+            return {'status': 'fail', "mesg": "该用户不存在!"}
+        return {'status': 'success', "data": userInfor}, 200
 
     def delete(self, id):
         pass
@@ -50,11 +50,12 @@ class user(Resource):
             try:
                 db.session.commit()
             except:
-                return {"mesg": "用户名已被注册!"}, 400
+                return {'status': 'fail', "mesg": "用户名已被注册!"}, 200
             user_id = record.id
-            return {"mesg": "用户注册成功!", "userId": user_id}, 200
+            return {'status': 'success', "mesg": "用户注册成功!",
+                    "data": {"userId": user_id}}, 200
         except:
-            return {'mesg': '用户注册失败!'}
+            return {'status': 'fail', 'mesg': '用户注册失败!'}
 
     def put(self):
         parser = reqparse.RequestParser()
@@ -70,7 +71,7 @@ class user(Resource):
         args = parser.parse_args(strict=True)
         user = User.query.filter_by(id=args['id']).first()
         if user.username != args["username"]:
-            return {"mesg": "用户名不可修改!"}
+            return {'status': 'fail', "mesg": "用户名不可修改!"}
         user.hash_password(args['password'])
         user.birthday = args['birthday']
         user.name = args['name']
@@ -80,12 +81,13 @@ class user(Resource):
         user.district = args['district']
         try:
             db.session.commit()
-            return {"mesg": "用户信息更新成功"}, 200
+            return {'status': 'success', "mesg": "用户信息更新成功"}, 200
         except:
-            return {"mesg": "更新失败!"}, 400
+            return {'status': 'fail', "mesg": "更新失败!"}, 200
 
 
 class verify_login(Resource):
+
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('username', type=str)
@@ -93,11 +95,12 @@ class verify_login(Resource):
         args = parser.parse_args(strict=True)
         user = User.query.filter_by(username=args['username']).first()
         if not user:
-            return {'mesg': '用户名输入错误!'}, 401
+            return {'status': 'fail', 'mesg': '用户名输入错误!'}
         if not user.verify_password(args['password']):
-            return {'mesg': '密码输入错误!'}, 401
+            return {'status': 'fail', 'mesg': '密码输入错误!'}
         token = user.generate_auth_token()
-        return {'token': token.decode('ascii'), 'status': 'ok'}, 200
+        return {'status': 'success', 'data': {'token': token.decode('ascii'),
+                                              'status': 'ok'}, 'mesg': '登录成功'}
 
 
 @Login.route('/v1/token', methods=['GET'])
@@ -125,4 +128,3 @@ def verify_password(username_or_token, password):
             return False
     g.user = user
     return True
-

@@ -22,7 +22,7 @@ class friend(Resource):
             names.append(friend_infor)
         temp = {}
         temp['friends'] = names
-        return temp, 200
+        return {'status': 'success', 'data': temp}
 
     def post(self):
         paser = reqparse.RequestParser()
@@ -31,20 +31,20 @@ class friend(Resource):
         args = paser.parse_args(strict=True)
         friend = User.query.filter_by(username=args['friendname']).first()
         if friend is None:
-            return {'mesg': '该好友还未注册!'}
+            return {'status': 'fail', 'mesg': '该好友还未注册!'}
         exit = friends.query.filter(friends.user_id == args['id'],
                                     friends.friend_id == friend.id).first()
         if exit is not None:
-            return {'mesg': '已经是朋友!'}
+            return {'status': 'fail', 'mesg': '已经是朋友!'}
         if args['id'] == str(friend.id):
-            return {'mesg': '不能和自己成为好友!'}
+            return {'status': 'fail', 'mesg': '不能和自己成为好友!'}
         record = friends(args['id'], friend.id)
         try:
             db.session.add(record)
             db.session.commit()
-            return {'mesg': '成功添加好友!'}
+            return {'status': 'success', 'mesg': '成功添加好友!'}
         except:
-            return {'mesg': '添加好友失败!'}
+            return {'status': 'fail', 'mesg': '添加好友失败!'}
 
     def delete(self):
         paser = reqparse.RequestParser()
@@ -53,16 +53,16 @@ class friend(Resource):
         args = paser.parse_args(strict=True)
         friend = User.query.filter_by(username=args['friendname']).first()
         if friend.id is None:
-            return {'mesg': '该好友还未注册!'}
+            return {'status': 'fail', 'mesg': '该好友还未注册!'}
         friendShip = friends.query.filter(
             friends.user_id == args['id'],
             friends.friend_id == friend.id).first()
         try:
             db.session.delete(friendShip)
             db.session.commit()
-            return {'mesg': '成功删除好友!'}
+            return {'status': 'success', 'mesg': '成功删除好友!'}
         except:
-            return {'mesg': '删除好友失败!'}
+            return {'status': 'fail', 'mesg': '删除好友失败!'}
 
     def put(self):
         pass

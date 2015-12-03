@@ -11,16 +11,16 @@ class devResource(Resource):
 
     def get(self):
         user_id = request.args['user_id']
-        records = device.query.filter_by(user_id= user_id).all()
+        records = device.query.filter_by(user_id=user_id).all()
         if len(records) == 0:
-            return {'mesg': '用户还未购买设备!'}
+            return {"status": "success", 'mesg': '用户还未购买设备!'}
         dev_mac = []
         for dev in to_json_list(records):
             del dev['id']
             dev_mac.append(dev['device_mac'])
         devices = {}
         devices['macId'] = dev_mac
-        return devices, 200
+        return {"status": "success", "data": devices}
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -32,14 +32,14 @@ class devResource(Resource):
             db.session.add(record)
             try:
                 db.session.commit()
-                return {'mesg': '设备添加成功!'}, 200
+                return {'status': 'success', 'mesg': '设备添加成功!'}, 200
             except:
-                return {'mesg': '设备已经存在!'}, 400
+                return {'status': 'fail', 'mesg': '设备已经存在!'}, 200
         except:
             user = User.query.filter_by(id=args['id']).first()
             if user.id is None:
-                return {'mesg': '用户不存在!'}, 400
-            return {'mesg': '错误的访问方法!'}
+                return {'status': 'fail', 'mesg': '用户不存在!'}, 200
+            return {'status': 'fail', 'mesg': '错误的访问方法!'}
 
     def delete(self):
         parser = reqparse.RequestParser()
@@ -52,12 +52,12 @@ class devResource(Resource):
         try:
             db.session.delete(record)
             db.session.commit()
-            return {'mesg': "删除设备成功!"}, 200
+            return {'status': 'success', 'mesg': "删除设备成功!"}
         except:
             dev = device.query.filter_by(device_mac=args['macId']).first()
             if dev.id is None:
-                return {'mesg': '设备不存在!!'}
-            return {'mesg': "删除设备失败!"}
+                return {'status': 'fail', 'mesg': '设备不存在!!'}
+            return {'status': 'fail', 'mesg': "删除设备失败!"}
 
     def put(self):
         pass
