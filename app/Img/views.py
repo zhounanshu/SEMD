@@ -56,7 +56,7 @@ class imgResource(Resource):
             db.session.add(record)
             try:
                 db.session.commit()
-                return {'status': 'fail', 'mesg': '图片上传成功!'}, 200
+                return {'status': 'success', 'mesg': '图片上传成功!'}, 200
             except:
                 exit = Img.query.filter_by(id=id).first()
                 if exit is not None:
