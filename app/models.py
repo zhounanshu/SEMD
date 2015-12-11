@@ -102,7 +102,7 @@ class reltiAqi(db.Model):
     content = db.Column(db.String(255), nullable=False)
     measure = db.Column(db.String(255), nullable=False)
 
-    def __inti__(self, datetime, aqi, level, pripoll, content, measure):
+    def __init__(self, datetime, aqi, level, pripoll, content, measure):
         self.datetime = datetime
         self.aqi = aqi
         self.level = level
@@ -255,6 +255,25 @@ class weaStation(db.Model):
         self.wind_direction = wind_direction
         self.wind_speed = wind_speed
         self.vis = vis
+
+
+class site_infor(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    site_number = db.Column(db.String(255), nullable=False)
+    site_name = db.Column(db.String(255), nullable=False)
+    district = db.Column(db.String(255))
+    longitude = db.Column(db.String(255), nullable=False)
+    latitude = db.Column(db.String(255), nullable=False)
+    addr = db.Column(db.String(255))
+
+    def __init__(self, site_number, site_name,
+                 district, longitude, latitude, addr):
+        self.site_number = site_number
+        self.site_name = site_name
+        self.district = district
+        self.longitude = longitude
+        self.latitude = latitude
+        self.addr = addr
 
 
 class userSetting(db.Model):

@@ -3,11 +3,112 @@
 from flask import request
 import datetime
 from flask.ext.restful import Resource
+from flask.ext.restful import reqparse
 import urllib2
 import json
 from .config import *
 from ..models import *
 from ..lib.util import *
+
+
+class realWether(Resource):
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('datetime', type=str)
+        parser.add_argument('name', type=str)
+        parser.add_argument('sitenumber', type=str)
+        parser.add_argument('tempe', type=str)
+        parser.add_argument('rain', type=str)
+        parser.add_argument('wind_direction')
+        parser.add_argument('wind_speed')
+        parser.add_argument('visibility', type=str)
+        parser.add_argument('humi', type=str)
+        parser.add_argument('pressure', type=str)
+        args = parser.parse_args(strict=True)
+        record = reltiWeather(args['datetime'], args['name'],
+                              args['sitenumber'], args['tempe'],
+                              args['humi'], args['wind_direction'],
+                              args['wind_speed'], args['pressure'],
+                              args['rain'], args['visibility'])
+        db.session.add(record)
+        try:
+            db.session.commit()
+        except:
+            return {'mesg': "添加数据失败"}, 200
+        return {'mesg': "添加数据成功!"}, 200
+
+
+class realAqi(Resource):
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('datetime', type=str)
+        parser.add_argument('aqi', type=str)
+        parser.add_argument('level')
+        parser.add_argument('pripoll')
+        parser.add_argument('content')
+        parser.add_argument('measure')
+        args = parser.parse_args(strict=True)
+        record = reltiAqi(args['datetime'], args['aqi'], args['level'], args[
+                          'pripoll'], args['content'], args['measure'])
+        db.session.add(record)
+        try:
+            db.session.commit()
+        except:
+            return {"mesg": "添加数据失败!"}, 200
+        return {'mesg': "添加数据成功!"}, 200
+
+
+class foreWeat(Resource):
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('datetime', type=str)
+        parser.add_argument('view_time', type=str)
+        parser.add_argument('direction', type=str)
+        parser.add_argument('speed', type=str)
+        parser.add_argument('tempe', type=str)
+        parser.add_argument('weather', type=str)
+        parser.add_argument('weatherpic', type=str)
+        parser.add_argument('area', type=str)
+        record = foreWeather(args['datetime'], args['view_time'],
+                             args['direction'], args['speed'],
+                             args['tempe'], args['weather'],
+                             args['weatherpic'])
+        db.session.add(record)
+        try:
+            db.session.commit()
+        except:
+            return {'mesg': '数据添加失败!'}, 200
+        return {'mesg': '数据添加成功!'}, 200
+
+
+class wea_Station(Resource):
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('datetime', type=str)
+        parser.add_argument('site_name', type=str)
+        parser.add_argument('tempe', type=str)
+        parser.add_argument('rain', type=str)
+        parser.add_argument('humi', type=str)
+        parser.add_argument('air_press', type=str)
+        parser.add_argument('wind_direction', type=str)
+        parser.add_argument('wind_speed', type=str)
+        parser.add_argument('vis', type=str)
+        parser.add_argument('lon', type=str)
+        parser.add_argument('lat', type=str)
+        record = weaStation(args['datetime'], args['site_name'], args['tempe'],
+                            args['rain'], args['humi'], args['air_press'],
+                            args['wind_direction'], args['wind_speed'],
+                            args['vis'], args['lon'], args['lat'])
+        db.session.add(record)
+        try:
+            db.session.commit()
+        except:
+            return {'mesg': '数据添加失败!'}
+        return {'mesg': "数据添加成功!"}
 
 
 class viewRelti(Resource):
@@ -30,15 +131,6 @@ class viewRelti(Resource):
         data['aqi'] = aqi_record[0].aqi
         data['level'] = aqi_record[0].level
         return {'status': 'success', "data": data}, 200
-
-    def post(self):
-        pass
-
-    def put(self):
-        pass
-
-    def delete(self):
-        pass
 
 
 class viewForecast(Resource):
@@ -86,7 +178,19 @@ class alarm(Resource):
         return {'status': 'success', "data": data}
 
         def post(self):
-            pass
+            parser = reqparse.RequestParser()
+            parser.add_argument('publishtime', type=str)
+            parser.add_argument('type', type=str)
+            parser.add_argument('level', type=str)
+            parser.add_argument('content', type=str)
+            record = cityAlarm(args['publishtime'], args['type'],
+                               args['level'], args['content'])
+            db.session.add(record)
+            try:
+                db.session.commit()
+            except:
+                return {'mesg': "上传数据失败!"}
+            return {'mesg': '上传数据成功!'}
 
         def put(self):
             pass
@@ -154,3 +258,93 @@ class get_rain(Resource):
         response = urllib2.urlopen(req).read()
         response = json.loads(response)['data']
         return {'status': 'success', "data": response}
+
+
+def isValid(data):
+    flag = 0
+    for key in data.keys():
+        if data[key] == 99999:
+            flag += 1
+    if flag == 0:
+        return True
+    return False
+
+
+def wind_direct(wind_direction):
+    wind_direct = None
+    if 22.6 <= float(wind_direction) and float(wind_direction) <= 67.5:
+        wind_direct = '东北'
+    if 67.6 <= float(wind_direction) and float(wind_direction) <= 112.5:
+        wind_direct = '东'
+    if 112.6 <= float(wind_direction) and float(wind_direction) <= 157.5:
+        wind_direct = '东南'
+    if 157.6 <= float(wind_direction) and float(wind_direction) <= 202.5:
+        wind_direct = '南'
+    if 202.6 <= float(wind_direction) and float(wind_direction) <= 247.5:
+        wind_direct = '西南'
+    if 247.6 <= float(wind_direction) and float(wind_direction) <= 292.5:
+        wind_direct = '西'
+    if 292.6 <= float(wind_direction) and float(wind_direction) <= 337.5:
+        wind_direct = '西北'
+    if 337.6 <= float(wind_direction) or float(wind_direction) <= 22.5:
+        wind_direct = '北'
+    return wind_direct
+
+
+def wind_speed(wind_speed):
+    wind_order = None
+    if 0 <= float(wind_speed) <= 0.2:
+        wind_order = 0
+    if 0.3 <= float(wind_speed) <= 1.5:
+        wind_order = 1
+    if 1.6 <= float(wind_speed) <= 3.3:
+        wind_order = 2
+    if 3.4 <= float(wind_speed) <= 5.4:
+        wind_order = 3
+    if 5.5 <= float(wind_speed) <= 7.9:
+        wind_order = 4
+    if 8.0 <= float(wind_speed) <= 10.7:
+        wind_order = 5
+    if 10.8 <= float(wind_speed) <= 13.8:
+        wind_order = 6
+    if 13.9 <= float(wind_speed) <= 17.1:
+        wind_order = 7
+    if 17.2 <= float(wind_speed) <= 20.7:
+        wind_order = 8
+    if 20.8 <= float(wind_speed) <= 24.4:
+        wind_order = 9
+    if 24.5 <= float(wind_speed) <= 28.4:
+        wind_order = 10
+    if 28.5 <= float(wind_speed) <= 32.6:
+        wind_order = 11
+    return wind_order
+
+
+class autoStation(Resource):
+
+    def get(self):
+        header = {"Accept": " application/json",
+                  "Content-Type": " application/json"}
+        req = urllib2.Request(station_url, headers=header)
+        response = urllib2.urlopen(req).read()
+        response = json.loads(response)['data']
+        result = []
+        for record in response:
+            buf = {}
+            location = site_infor.query.filter_by(
+                site_name=record['site_name']).first()
+            if location is not None:
+                if wind_direct(record['wind_direction']) is not None and wind_speed(record['wind_speed']) is not None:
+                    buf['longitude'] = location.longitude
+                    buf['latitude'] = location.latitude
+                    buf['tempe'] = record['tempe']
+                    buf['rain'] = record['rain']
+                    buf['wind_direction'] = wind_direct(
+                        record['wind_direction']) + '风'
+                    buf['wind_speed'] = str(
+                        wind_speed(record['wind_speed'])) + '级'
+                    buf['datetime'] = record['datetime']
+                    result.append(buf)
+        if result is None:
+            return {'status': 'fail', 'mesg': '缺失数据!'}
+        return {'mesg': '自动站信息', 'status': 'success', 'data': result}

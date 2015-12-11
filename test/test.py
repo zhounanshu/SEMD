@@ -27,3 +27,7 @@ print basedir
 
 folder = tempfile.mkdtemp()
 print folder
+
+a = 23.4
+if 22 <= a <= 25 :
+    print "yes"

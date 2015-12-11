@@ -26,4 +26,6 @@ def create_app(cnf):
     app.register_blueprint(userSet)
     from .Img import imgBlueprint
     app.register_blueprint(imgBlueprint)
+    from .mycity import myCity_blueprint
+    app.register_blueprint(myCity_blueprint)
     return app

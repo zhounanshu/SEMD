@@ -108,35 +108,6 @@ class reltiPerson(Resource):
         return {'status': 'success', "data": result}
 
 
-class reltiPeople(Resource):
-
-    def get(self):
-        base_time = datetime.datetime.now()
-        forwd_time = base_time - datetime.timedelta(hours=2)
-        start_time = forwd_time.strftime('%Y-%m-%d %H:%M:%S')
-        end_time = base_time.strftime('%Y-%m-%d %H:%M:%S')
-        print start_time
-        print end_time
-        data_list = devData.query.filter(devData.datatime >= start_time,
-                                         devData.datatime <= end_time).all()
-        if len(data_list) == 0:
-            return {'status': 'fail', 'mesg': '没有用户上传数据'}
-        user_list = []
-        for user in data_list:
-            user_list.append(user.user_id)
-        user_list = list(set(user_list))
-        result = []
-        for id in user_list:
-            buf = {}
-            record = devData.query.filter_by(user_id=id).order_by(
-                'datatime desc').limit(1)[0]
-            buf = to_json(record)
-            del buf['user_id']
-            del buf['device_mac']
-            result.append(buf)
-        return {'status': 'fail', "data": result}
-
-
 class env_history(Resource):
 
     def get(self):
