@@ -256,8 +256,65 @@ class get_rain(Resource):
                   "Content-Type": " application/json"}
         req = urllib2.Request(rain_url, headers=header)
         response = urllib2.urlopen(req).read()
-        response = json.loads(response)['data']
-        return {'status': 'success', "data": response}
+        response = json.loads(response)['data']['list']
+        rain_list = []
+        for elem in response:
+            rain_list.append(elem['d'])
+        rain_list = ['6', '1', '2', '5', '3', '7', '7',
+                     '9', '12', '7', '56', '8', '9', '4', '5', '8']
+        if float(rain_list[0]) == 0:
+            count = 0
+            for i in range(len(rain_list)):
+                if float(rain_list[i]) != 0:
+                    count = i
+                    break
+            if count != 0:
+                mesg = '当前位置没有雨,' + str(count * 6) + '分钟后降雨'
+                return {'status': 'success', 'mesg': mesg}
+            else:
+                mesg = '当前位置没有雨，未来90分钟不会下雨'
+                return {'status': 'success', 'mesg': mesg}
+        else:
+            count = 0
+            for i in range(len(rain_list) - 1):
+                if rain_list[i] < rain_list[i + 1]:
+                    count += 1
+            if count == 15:
+                return {'status': 'success', 'mesg': '当前位置有雨, 未来90分钟累计降雨量为' + str(rain_list[15]) + 'mm'}
+            else:
+                count = 0
+                flag = False
+                for i in range(len(rain_list) - 1):
+                    for j in range(len(rain_list) - 1 - i):
+                        print "the value is:" + str(rain_list[j + i + 1])
+                        print "commit:" + str(rain_list[i])
+                        print "------------------------------"
+                        if rain_list[i] == rain_list[j + i + 1]:
+                            count = i
+                            flag = True
+                            break
+                    if flag:
+                        break
+                print str(count)
+                mesg = '当前位置有雨, 未来' + \
+                    str(count * 6) + '分钟降雨量为' + \
+                    str(rain_list[count]) + 'mm, 之后雨停'
+                return{'status': 'success', 'mesg': mesg}
+
+
+class get_qpf(Resource):
+
+    def get(self):
+        header = {'Accept': 'application/json',
+                  'Content-Type': 'application/json'}
+        request = urllib2.Request(rain_qpf, headers=header)
+        response = urllib2.urlopen(request).read()
+        records = json.loads(response)['data']
+        result = []
+        for value in records:
+            if value['data'] != 0:
+                result.append(value)
+        return {'status': 'success', 'data': result}
 
 
 def isValid(data):

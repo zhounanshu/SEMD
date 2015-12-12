@@ -16,6 +16,7 @@ weather_api.add_resource(get_forecast, '/v1/weather/forecast')
 weather_api.add_resource(get_alarm, '/v1/weather/alarm')
 weather_api.add_resource(get_rain, '/v1/weather/rain')
 weather_api.add_resource(autoStation, '/v1/map/view/autostation')
+weather_api.add_resource(get_qpf, '/v1/weather/qpf')
 # upload weather station
 weather_api.add_resource(realWether, '/v1/weather/realtime/upload')
 weather_api.add_resource(realAqi, '/v1/aqi/realtime/upload')
