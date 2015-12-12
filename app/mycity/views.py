@@ -34,11 +34,8 @@ class reltiPeople(Resource):
         forwd_time = base_time - datetime.timedelta(hours=2)
         start_time = forwd_time.strftime('%Y-%m-%d %H:%M:%S')
         end_time = base_time.strftime('%Y-%m-%d %H:%M:%S')
-        print start_time
-        print end_time
         data_list = devData.query.filter(devData.datatime >= start_time,
                                          devData.datatime <= end_time).all()
-        print data_list
         if len(data_list) == 0:
             return {'status': 'fail', 'mesg': '没有用户上传数据'}
         user_list = []
@@ -49,9 +46,9 @@ class reltiPeople(Resource):
         for id in user_list:
             buf = {}
             record = devData.query.filter_by(user_id=id).order_by(
-                'datatime desc').limit(1)[0]
+                devData.datatime.desc()).limit(1)[0]
             buf = to_json(record)
-            del buf['user_id']
+            # del buf['user_id']
             del buf['device_mac']
             result.append(buf)
         device_real = []

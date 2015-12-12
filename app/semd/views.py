@@ -3,7 +3,7 @@
 from flask.ext.restful import Resource
 from flask.ext.restful import reqparse
 from flask import request
-import datetime
+from datetime import datetime
 from ..models import *
 from ..lib.util import *
 
@@ -22,7 +22,9 @@ class devResource(Resource):
         parser.add_argument('pressure', type=str)
         parser.add_argument('uvIndex', type=str)
         args = parser.parse_args(strict=True)
-        record = devData(args['datatime'], args['device_mac'],
+        datatime = datetime.strptime(
+            args['datatime'], '%Y-%m-%d %H:%M:%S')
+        record = devData(datatime, args['device_mac'],
                          args['user_id'], args['longitude'], args['latitude'],
                          args['temperature'], args['humidity'],
                          args['pressure'], args['uvIndex'])
