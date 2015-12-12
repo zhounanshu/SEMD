@@ -19,15 +19,15 @@ class devResource(Resource):
             del dev['id']
             dev_mac.append(dev['device_mac'])
         devices = {}
-        devices['macId'] = dev_mac
+        devices['dev_mac'] = dev_mac
         return {"status": "success", "data": devices}
 
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=str)
-        parser.add_argument('macId', type=str)
+        parser.add_argument('dev_mac', type=str)
         args = parser.parse_args(strict=True)
-        record = device(args['macId'], args['id'])
+        record = device(args['dev_mac'], args['id'])
         try:
             db.session.add(record)
             try:
@@ -44,17 +44,17 @@ class devResource(Resource):
     def delete(self):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=str)
-        parser.add_argument('macId', type=str)
+        parser.add_argument('dev_mac', type=str)
         args = parser.parse_args(strict=True)
         record = device.query.filter(
             device.user_id == args['id'],
-            device.device_mac == args['macId']).first()
+            device.device_mac == args['dev_mac']).first()
         try:
             db.session.delete(record)
             db.session.commit()
             return {'status': 'success', 'mesg': "删除设备成功!"}
         except:
-            dev = device.query.filter_by(device_mac=args['macId']).first()
+            dev = device.query.filter_by(device_mac=args['dev_mac']).first()
             if dev.id is None:
                 return {'status': 'fail', 'mesg': '设备不存在!!'}
             return {'status': 'fail', 'mesg': "删除设备失败!"}
