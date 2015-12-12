@@ -260,8 +260,6 @@ class get_rain(Resource):
         rain_list = []
         for elem in response:
             rain_list.append(elem['d'])
-        rain_list = ['6', '1', '2', '5', '3', '7', '7',
-                     '9', '12', '7', '56', '8', '9', '4', '5', '8']
         if float(rain_list[0]) == 0:
             count = 0
             for i in range(len(rain_list)):
@@ -286,16 +284,12 @@ class get_rain(Resource):
                 flag = False
                 for i in range(len(rain_list) - 1):
                     for j in range(len(rain_list) - 1 - i):
-                        print "the value is:" + str(rain_list[j + i + 1])
-                        print "commit:" + str(rain_list[i])
-                        print "------------------------------"
                         if rain_list[i] == rain_list[j + i + 1]:
                             count = i
                             flag = True
                             break
                     if flag:
                         break
-                print str(count)
                 mesg = '当前位置有雨, 未来' + \
                     str(count * 6) + '分钟降雨量为' + \
                     str(rain_list[count]) + 'mm, 之后雨停'
