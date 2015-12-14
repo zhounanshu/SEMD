@@ -99,8 +99,8 @@ class verify_login(Resource):
         if not user.verify_password(args['password']):
             return {'status': 'fail', 'mesg': '密码输入错误!'}
         token = user.generate_auth_token()
-        return {'status': 'success', 'data': {'token': token.decode('ascii'),
-                                              'status': 'ok'}, 'mesg': '登录成功'}
+        return {'status': 'success', 'data': {'token': token.decode('ascii')
+                                              }, 'mesg': '登录成功'}
 
 
 @Login.route('/v1/token', methods=['GET'])

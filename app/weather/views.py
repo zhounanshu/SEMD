@@ -165,38 +165,34 @@ class alarm(Resource):
 
     def get(self):
         area = request.args['area']
-        records = cityAlarm.query.filter(
-            cityAlarm.publishtime == datetime.datetime.now().strftime(
-                '%Y-%m-%d'), area=area)
-        if records.id is None:
+        record = cityAlarm.query.order_by(cityAlarm.publishtime.desc()).first()
+        if record is None:
             return {'status': 'fail', "mesg": "数据缺失"}
-        data = []
-        for record in records:
-            temp = {}
-            temp = to_json_list(record)
-            data.append(temp)
+        data = to_json(record)
+        del data['id']
         return {'status': 'success', "data": data}
 
-        def post(self):
-            parser = reqparse.RequestParser()
-            parser.add_argument('publishtime', type=str)
-            parser.add_argument('type', type=str)
-            parser.add_argument('level', type=str)
-            parser.add_argument('content', type=str)
-            record = cityAlarm(args['publishtime'], args['type'],
-                               args['level'], args['content'])
-            db.session.add(record)
-            try:
-                db.session.commit()
-            except:
-                return {'mesg': "上传数据失败!"}
-            return {'mesg': '上传数据成功!'}
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('publishtime', type=str)
+        parser.add_argument('type')
+        parser.add_argument('level')
+        parser.add_argument('content')
+        args = parser.parse_args(strict=True)
+        record = cityAlarm(args['publishtime'], args['type'],
+                           args['level'], args['content'])
+        db.session.add(record)
+        try:
+            db.session.commit()
+        except:
+            return {'mesg': "上传数据失败!"}
+        return {'mesg': '上传数据成功!'}
 
-        def put(self):
-            pass
+    def put(self):
+        pass
 
-        def delete(self):
-            pass
+    def delete(self):
+        pass
 
 
 class get_alarm(Resource):
