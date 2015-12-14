@@ -26,20 +26,13 @@ def allowed_file(f):
 
 
 def delete_file_folder(src):
-    if os.path.isfile(src):
+    for item in os.listdir(src):
+        itemsrc = os.path.join(src, item)
         try:
-            os.remove(src)
+            if os.path.isfile(itemsrc):
+                os.remove(itemsrc)
         except:
-            pass
-    if os.path.isdir(src):
-        for item in os.listdir(src):
-            itemsrc = os.path.join(src, item)
-            print itemsrc
-            delete_file_folder(itemsrc)
-        try:
-            os.rmdir(src)
-        except:
-            pass
+            print "the operation is wrong!"
 
 
 class imgResource(Resource):
@@ -92,7 +85,6 @@ class imgResource(Resource):
             prefix = os.path.split(os.path.realpath(__file__))[0] + '/buf/'
             postfix = (img_inf.img_path).split('/')[-1]
             path = prefix + postfix
-            print prefix
             delete_file_folder(prefix)
             pic.save(path)
         else:

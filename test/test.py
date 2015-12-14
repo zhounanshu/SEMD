@@ -8,7 +8,7 @@ import tempfile
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
-url = 'http://61.152.122.112:8080/api/v1/auto_stations/master?appid=bFLKk0uV7IZvzcBoWJ1j&appkey=mXwnhDkYIG6S9iOyqsAW7vPVQ5ZxBe'
+url = 'localhost'
 header = {"Accept":" application/json", "Content-Type": " application/json"}
 request = urllib2.Request(url, headers=header)
 response = urllib2.urlopen(request).read()
@@ -23,6 +23,20 @@ for key in invalid_keys:
 print json.dumps(record, ensure_ascii=False)
 
 basedir = os.path.split(os.path.realpath(__file__))[0]
-print basedir
 
 
+def delete_file_folder(src):
+    if os.path.isfile(src):
+        try:
+            os.remove(src)
+        except:
+            pass
+    if os.path.isdir(src):
+        for item in os.listdir(src):
+            itemsrc = os.path.join(src, item)
+            print itemsrc
+            delete_file_folder(itemsrc)
+        try:
+            os.rmdir(src)
+        except:
+            pass

@@ -231,7 +231,6 @@ class viewForecast(Resource):
 class alarm(Resource):
 
     def get(self):
-        area = request.args['area']
         record = cityAlarm.query.order_by(cityAlarm.publishtime.desc()).first()
         if record is None:
             return {'status': 'fail', "mesg": "数据缺失"}
@@ -365,6 +364,27 @@ class get_rain(Resource):
                     str(rain_list[count]) + 'mm, 之后雨停'
                 return{'status': 'success', 'mesg': mesg}
 
+import random
+import math
+
+
+def rad(arg):
+    return float(arg) ** math.pi / 180
+
+
+def distance(lat1, lng1, lat2, lng2):
+    radlat1 = rad(lat1)
+    radlat2 = rad(lat2)
+    a = radlat1 - radlat2
+    b = rad(lng1) - rad(lng2)
+    s = 2 * math.asin(math.sqrt(math.pow(math.sin(a / 2), 2) +
+                                math.cos(radlat1) * math.cos(radlat2) * math.pow(math.sin(b / 2), 2)))
+    earth_radius = 6378.137 * 1000
+    s = s * earth_radius
+    if s < 0:
+        return -s
+    else:
+        return s
 
 class get_qpf(Resource):
 
@@ -374,6 +394,12 @@ class get_qpf(Resource):
         request = urllib2.Request(rain_qpf, headers=header)
         response = urllib2.urlopen(request).read()
         records = json.loads(response)['data']
+        '''
+                        雨量预测测试
+        '''
+        for value in records:
+            if distance('31.87', '121.33', value['lat'], value['lon']) < 100000:
+                value['data'] = str(random.random())[:3]
         result = []
         for value in records:
             if value['data'] != 0:
