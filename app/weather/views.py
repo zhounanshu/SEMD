@@ -11,6 +11,73 @@ from ..models import *
 from ..lib.util import *
 
 
+def isValid(data):
+    flag = 0
+    for key in data.keys():
+        if data[key] == 99999:
+            flag += 1
+    if flag == 0:
+        return True
+    return False
+
+
+def isData(data):
+    if data == 99999:
+        return False
+    else:
+        return True
+
+
+def wind_direct(wind_direction):
+    wind_direct = None
+    if 22.6 <= float(wind_direction) and float(wind_direction) <= 67.5:
+        wind_direct = '东北'
+    if 67.6 <= float(wind_direction) and float(wind_direction) <= 112.5:
+        wind_direct = '东'
+    if 112.6 <= float(wind_direction) and float(wind_direction) <= 157.5:
+        wind_direct = '东南'
+    if 157.6 <= float(wind_direction) and float(wind_direction) <= 202.5:
+        wind_direct = '南'
+    if 202.6 <= float(wind_direction) and float(wind_direction) <= 247.5:
+        wind_direct = '西南'
+    if 247.6 <= float(wind_direction) and float(wind_direction) <= 292.5:
+        wind_direct = '西'
+    if 292.6 <= float(wind_direction) and float(wind_direction) <= 337.5:
+        wind_direct = '西北'
+    if 337.6 <= float(wind_direction) or float(wind_direction) <= 22.5:
+        wind_direct = '北'
+    return wind_direct
+
+
+def wind_speed(wind_speed):
+    wind_order = None
+    if 0 <= float(wind_speed) <= 0.2:
+        wind_order = 0
+    if 0.3 <= float(wind_speed) <= 1.5:
+        wind_order = 1
+    if 1.6 <= float(wind_speed) <= 3.3:
+        wind_order = 2
+    if 3.4 <= float(wind_speed) <= 5.4:
+        wind_order = 3
+    if 5.5 <= float(wind_speed) <= 7.9:
+        wind_order = 4
+    if 8.0 <= float(wind_speed) <= 10.7:
+        wind_order = 5
+    if 10.8 <= float(wind_speed) <= 13.8:
+        wind_order = 6
+    if 13.9 <= float(wind_speed) <= 17.1:
+        wind_order = 7
+    if 17.2 <= float(wind_speed) <= 20.7:
+        wind_order = 8
+    if 20.8 <= float(wind_speed) <= 24.4:
+        wind_order = 9
+    if 24.5 <= float(wind_speed) <= 28.4:
+        wind_order = 10
+    if 28.5 <= float(wind_speed) <= 32.6:
+        wind_order = 11
+    return wind_order
+
+
 class realWether(Resource):
 
     def post(self):
@@ -221,6 +288,13 @@ class get_realtime(Resource):
         invalid_keys = ['sitenumber', 'rain', 'visibility']
         for key in invalid_keys:
             del temp[key]
+        if not isData(temp['wind_speed']):
+            temp['wind_speed'] = 0
+        if not isData(temp['wind_direction']):
+            temp['wind_direction'] = 0
+        temp['wind_speed'] = str(wind_speed(temp['wind_speed'])) + '级'
+        temp['wind_direction'] = wind_direct(
+            temp['wind_direction']) + '风'
         aqi_req = urllib2.Request(aqi_url, headers=header)
         aqi_response = urllib2.urlopen(aqi_req).read()
         aqi = json.loads(aqi_response)['aqi']
@@ -305,66 +379,6 @@ class get_qpf(Resource):
             if value['data'] != 0:
                 result.append(value)
         return {'status': 'success', 'data': result}
-
-
-def isValid(data):
-    flag = 0
-    for key in data.keys():
-        if data[key] == 99999:
-            flag += 1
-    if flag == 0:
-        return True
-    return False
-
-
-def wind_direct(wind_direction):
-    wind_direct = None
-    if 22.6 <= float(wind_direction) and float(wind_direction) <= 67.5:
-        wind_direct = '东北'
-    if 67.6 <= float(wind_direction) and float(wind_direction) <= 112.5:
-        wind_direct = '东'
-    if 112.6 <= float(wind_direction) and float(wind_direction) <= 157.5:
-        wind_direct = '东南'
-    if 157.6 <= float(wind_direction) and float(wind_direction) <= 202.5:
-        wind_direct = '南'
-    if 202.6 <= float(wind_direction) and float(wind_direction) <= 247.5:
-        wind_direct = '西南'
-    if 247.6 <= float(wind_direction) and float(wind_direction) <= 292.5:
-        wind_direct = '西'
-    if 292.6 <= float(wind_direction) and float(wind_direction) <= 337.5:
-        wind_direct = '西北'
-    if 337.6 <= float(wind_direction) or float(wind_direction) <= 22.5:
-        wind_direct = '北'
-    return wind_direct
-
-
-def wind_speed(wind_speed):
-    wind_order = None
-    if 0 <= float(wind_speed) <= 0.2:
-        wind_order = 0
-    if 0.3 <= float(wind_speed) <= 1.5:
-        wind_order = 1
-    if 1.6 <= float(wind_speed) <= 3.3:
-        wind_order = 2
-    if 3.4 <= float(wind_speed) <= 5.4:
-        wind_order = 3
-    if 5.5 <= float(wind_speed) <= 7.9:
-        wind_order = 4
-    if 8.0 <= float(wind_speed) <= 10.7:
-        wind_order = 5
-    if 10.8 <= float(wind_speed) <= 13.8:
-        wind_order = 6
-    if 13.9 <= float(wind_speed) <= 17.1:
-        wind_order = 7
-    if 17.2 <= float(wind_speed) <= 20.7:
-        wind_order = 8
-    if 20.8 <= float(wind_speed) <= 24.4:
-        wind_order = 9
-    if 24.5 <= float(wind_speed) <= 28.4:
-        wind_order = 10
-    if 28.5 <= float(wind_speed) <= 32.6:
-        wind_order = 11
-    return wind_order
 
 
 class autoStation(Resource):
