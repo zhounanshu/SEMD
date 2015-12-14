@@ -25,7 +25,7 @@ class devResource(Resource):
         user = User.query.filter_by(id=args['user_id']).first()
         if user is None:
             return {'mesg': '该用户不存在!'}
-        datatime = datetime.strptime(
+        datatime = datetime.datetime.strptime(
             args['datatime'], '%Y-%m-%d %H:%M:%S')
         record = devData(datatime, args['device_mac'],
                          args['user_id'], args['longitude'], args['latitude'],
