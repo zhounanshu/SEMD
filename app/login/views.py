@@ -100,7 +100,9 @@ class verify_login(Resource):
         if not user.verify_password(args['password']):
             return {'status': 'fail', 'mesg': '密码输入错误!'}
         token = user.generate_auth_token()
-        return {'status': 'success', 'data': {'token': token.decode('ascii')
+        id = user.id
+        return {'status': 'success', 'data': {"user_id": id,
+                                              'token': token.decode('ascii')
                                               }, 'mesg': '登录成功'}
 
 
