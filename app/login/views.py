@@ -19,6 +19,7 @@ class userView(Resource):
         userInfor['email'] = user.email
         userInfor['birthday'] = user.birthday
         userInfor['province'] = user.province
+        userInfor['name'] = user.name
         userInfor['district'] = user.district
         userInfor['sex'] = user.sex
         if user is None:
