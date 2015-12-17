@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from PIL import Image
+import identicon
 from flask.ext.restful import Resource
 import os
+import random
 from flask import request
 from flask import send_file
 from ..models import *
@@ -62,20 +64,33 @@ class imgResource(Resource):
 
     def put(self, id):
         f = request.files['file']
-        if f and allowed_file(f.filename):
-            record = Img.query.filter_by(user_id=id).first()
-            if record is None:
-                return {'mesg': '该用户没有上传头像!'}, 200
-            f.save(record.img_path)
+        filename = f.filename
+        if f and allowed_file(filename):
+            f_name = str(id) + '.' + \
+                str('.' in filename and filename.rsplit('.', 1)[1])
+            img_path = os.path.join(get_path(), f_name)
+            f.save(img_path)
             return {'status': 'success', 'mesg': '头像更新成功!'}, 201
         return {'status': 'fail', 'mesg': '头像更新失败!'}, 200
 
     def get(self, id):
         width = request.args.get('width')
         height = request.args.get('height')
+        user = User.query.filter_by(id=id).first()
+        if user is None:
+            return {'status': 'fail', 'mesg': '该用户还未注册!'}
         img_inf = Img.query.filter_by(user_id=id).first()
         if img_inf is None:
-            return {'status': 'fail', 'mesg': '用户还未上传头像!'}, 200
+            code = random.randint(50000000, 90000000)
+            img = identicon.render_identicon(code, 16)
+            img.save(os.path.join(get_path(), str(id) + '.png'))
+            record = Img(id, os.path.join(get_path(), str(id) + '.png'))
+            db.session.add(record)
+            try:
+                db.session.commit()
+                return {'status': 'success', 'mesg': '头像成功初始化!'}, 200
+            except:
+                return {'status': 'fail', 'mesg': '头像初始化失败!'}, 200
         pic = Image.open(img_inf.img_path)
         w, h = pic.size
         if (width is not None) and (height is not None):
