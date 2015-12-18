@@ -43,8 +43,8 @@ class imgResource(Resource):
         f = request.files['file']
         filename = f.filename
         if f and allowed_file(filename):
-            f_name = str(id) + '.' + \
-                str('.' in filename and filename.rsplit('.', 1)[1])
+            f_name = str(id) + '.' + 'jpg'
+                # str('.' in filename and filename.rsplit('.', 1)[1])
             img_path = os.path.join(get_path(), f_name)
             f.save(img_path)
             record = Img(id, img_path)
@@ -66,8 +66,8 @@ class imgResource(Resource):
         f = request.files['file']
         filename = f.filename
         if f and allowed_file(filename):
-            f_name = str(id) + '.' + \
-                str('.' in filename and filename.rsplit('.', 1)[1])
+            f_name = str(id) + '.' + 'jpg'
+                # str('.' in filename and filename.rsplit('.', 1)[1])
             img_path = os.path.join(get_path(), f_name)
             f.save(img_path)
             return {'status': 'success', 'mesg': '头像更新成功!'}, 201
@@ -83,12 +83,13 @@ class imgResource(Resource):
         if img_inf is None:
             code = random.randint(50000000, 90000000)
             img = identicon.render_identicon(code, 16)
-            img.save(os.path.join(get_path(), str(id) + '.png'))
-            record = Img(id, os.path.join(get_path(), str(id) + '.png'))
+            img_path = os.path.join(get_path(), str(id) + '.jpg')
+            img.save(img_path)
+            record = Img(id, img_path)
             db.session.add(record)
             try:
                 db.session.commit()
-                return {'status': 'success', 'mesg': '头像成功初始化!'}, 200
+                return send_file(img_path)
             except:
                 return {'status': 'fail', 'mesg': '头像初始化失败!'}, 200
         pic = Image.open(img_inf.img_path)
