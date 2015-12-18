@@ -82,7 +82,7 @@ class imgResource(Resource):
         img_inf = Img.query.filter_by(user_id=id).first()
         if img_inf is None:
             code = random.randint(50000000, 90000000)
-            img = identicon.render_identicon(code, 16)
+            img = identicon.render_identicon(code, 36)
             img_path = os.path.join(get_path(), str(id) + '.jpg')
             img.save(img_path)
             record = Img(id, img_path)
