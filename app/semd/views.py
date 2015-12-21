@@ -36,7 +36,7 @@ class devResource(Resource):
             db.session.commit()
             return {'status': 'success', 'mesg': '数据上传成功!'}, 200
         except:
-            return {'status': 'fail', 'mesg': '数据上传失败!'}, 200
+            return {'status': 'fail', 'mesg': '请先绑定设备!'}, 200
 
 
 class usrResource(Resource):
