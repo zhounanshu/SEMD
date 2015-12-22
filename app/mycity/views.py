@@ -77,6 +77,7 @@ def wind_speed(wind_speed):
         wind_order = 11
     return wind_order
 
+
 def rad(arg):
     return float(arg) ** math.pi / 180
 

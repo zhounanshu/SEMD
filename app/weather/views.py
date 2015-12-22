@@ -14,6 +14,14 @@ from ..lib.util import *
 sys.path.append('..')
 
 
+type_codes = ['a', 'b', 'c', 'd', 'e', 'f',
+              'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o']
+alarm_types = ['台风', '暴雨', '暴雪', '寒潮', '大风', '大雾', '雷电',
+               '冰雹', '霜冻', '高温', '干旱', '道路结冰', '霾', '沙城暴', '臭氧']
+alarm_levels = ['蓝色', '黄色', '橙色', '红色', '解除']
+types = dict(zip(alarm_types, type_codes))
+
+
 def isValid(data):
     flag = 0
     for key in data.keys():
@@ -234,11 +242,21 @@ class viewForecast(Resource):
 class alarm(Resource):
 
     def get(self):
-        record = cityAlarm.query.order_by(cityAlarm.publishtime.desc()).first()
+        record = cityAlarm.query.order_by(cityAlarm.publishtime.desc()).all()
         if record is None:
             return {'status': 'fail', "mesg": "数据缺失"}
-        data = to_json(record)
-        del data['id']
+        data = to_json_list(record)
+        result = []
+        for elem in data:
+            if elem['level'] != "解除".decode('utf-8'):
+                level_code = alarm_levels.index(elem['level'].encode('utf-8'))
+                type_code = types[elem['type'].encode('utf-8')]
+                img_name = type_code + str(level_code)
+                elem['img_name'] = img_name
+            else:
+                elem['img_name'] = None
+                del elem['id']
+                result.append(elem)
         return {'status': 'success', "data": data}
 
     def post(self):
@@ -263,13 +281,6 @@ class alarm(Resource):
     def delete(self):
         pass
 
-type_codes = ['a', 'b', 'c', 'd', 'e', 'f',
-              'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o']
-alarm_types = ['台风', '暴雨', '暴雪', '寒潮', '大风', '大雾', '雷电',
-               '冰雹', '霜冻', '高温', '干旱', '道路结冰', '霾', '沙城暴', '臭氧']
-alarm_levels = ['蓝色', '黄色', '橙色', '红色', '解除']
-types = zip(alarm_types, type_codes)
-
 
 class get_alarm(Resource):
 
@@ -278,9 +289,9 @@ class get_alarm(Resource):
         response = json.loads(response)
         result = []
         for elem in response:
-            if elem['level'] != '解除':
-                level_code = alarm_levels.index(elem['level'])
-                type_code = type_codes[alarm_types[elem['type']]]
+            if elem['level'] != "解除".decode('utf-8'):
+                level_code = alarm_levels.index(elem['level'].encdoe('utf-8'))
+                type_code = types[elem['type'].encode('utf-8')]
                 img_name = type_code + str(level_code)
                 elem['img_name'] = img_name
             else:
