@@ -162,7 +162,7 @@ class reltiPeople(Resource):
         station_data = {}
         station_data['source'] = '2'
         station_data['resource'] = result
-        container = []
-        container.append(dev_data)
-        container.append(station_data)
+        container = {}
+        container['meteortag'] = device_real
+        container['autostation'] = result
         return {'status': 'success', "data": container}
