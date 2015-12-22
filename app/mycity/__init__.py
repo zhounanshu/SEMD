@@ -6,4 +6,4 @@ myCity_blueprint = Blueprint('myCity', __name__)
 mycity_api = Api(myCity_blueprint)
 
 from .views import *
-mycity_api.add_resource(reltiPeople, '/v1/map/view/device')
+mycity_api.add_resource(reltiPeople, '/v1/map/view')

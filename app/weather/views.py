@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import request
+from flask import request, send_file
 import datetime
 from flask.ext.restful import Resource
 from flask.ext.restful import reqparse
 import urllib2
+import sys
+import os
 import json
 from .config import *
 from ..models import *
 from ..lib.util import *
+sys.path.append('..')
 
 
 def isValid(data):
@@ -260,13 +263,38 @@ class alarm(Resource):
     def delete(self):
         pass
 
+type_codes = ['a', 'b', 'c', 'd', 'e', 'f',
+              'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o']
+alarm_types = ['台风', '暴雨', '暴雪', '寒潮', '大风', '大雾', '雷电',
+               '冰雹', '霜冻', '高温', '干旱', '道路结冰', '霾', '沙城暴', '臭氧']
+alarm_levels = ['蓝色', '黄色', '橙色', '红色', '解除']
+types = zip(alarm_types, type_codes)
+
 
 class get_alarm(Resource):
 
     def get(self):
         response = urllib2.urlopen(url).read()
         response = json.loads(response)
-        return {'status': 'success', "data": response}
+        result = []
+        for elem in response:
+            if elem['level'] != '解除':
+                level_code = alarm_levels.index(elem['level'])
+                type_code = type_codes[alarm_types[elem['type']]]
+                img_name = type_code + str(level_code)
+                elem['img_name'] = img_name
+            else:
+                elem['img_name'] = None
+                result.append(elem)
+        return {'status': 'success', "data": result}
+
+
+class alarm_img(Resource):
+    def get(self):
+        img_name = request.args['img_name']
+        path = os.path.split(os.path.realpath(__file__))[0] + '/alarm_pic'
+        img = os.path.join(path, img_name + '.jpg')
+        return send_file(img)
 
 
 class get_realtime(Resource):
@@ -347,7 +375,8 @@ class get_rain(Resource):
                 if rain_list[i] < rain_list[i + 1]:
                     count += 1
             if count == 15:
-                return {'status': 'success', 'mesg': '当前位置有雨, 未来90分钟累计降雨量为' + str(rain_list[15]) + 'mm'}
+                return {'status': 'success', 'mesg': '当前位置有雨, 未来90分钟累计降雨量为' +
+                        str(rain_list[15]) + 'mm'}
             else:
                 count = 0
                 flag = False
@@ -385,6 +414,7 @@ def distance(lat1, lng1, lat2, lng2):
         return -s
     else:
         return s
+
 
 class get_qpf(Resource):
 
