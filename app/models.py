@@ -299,7 +299,7 @@ class sport(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     datatime = db.Column(db.String(255), nullable=False)
     device_mac = db.Column(
-        db.String(255), db.ForeignKey('device.device_mac'), nullable=False)
+        db.String(255), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     longitude = db.Column(db.String(255), nullable=False)
     latitude = db.Column(db.String(255), nullable=False)

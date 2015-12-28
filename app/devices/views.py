@@ -49,8 +49,8 @@ class devResource(Resource):
         record = device.query.filter(
             device.user_id == args['id'],
             device.device_mac == args['dev_mac']).first()
-        db.session.delete(record)
         try:
+            db.session.delete(record)
             db.session.commit()
             return {'status': 'success', 'mesg': "删除设备成功!"}
         except:
