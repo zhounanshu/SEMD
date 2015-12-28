@@ -7,6 +7,7 @@ from flask.ext.restful import reqparse
 import urllib2
 import sys
 import os
+import re
 import json
 from .config import *
 from ..models import *
@@ -344,7 +345,41 @@ class get_realtime(Resource):
 
 weather_pic = ['晴', '多云', '阴', '小雨', '小雪', '阵雨', '中雨', '中雪', '雷阵雨',
                '雨夹雪', '大雨', '大雪', '暴雨', '暴雪', '大暴雨', '特大暴雨', '冰雹',
-               '沙尘暴', '雾', '浮尘', '扬尘', '扬沙', '强沙尘暴', '有雨']
+               '沙尘暴', '雾', '浮尘', '扬尘', '扬沙', '强沙尘暴']
+weather_spe = ['雨', '雪', '霾']
+haze_degree = ['轻', '中', '重']
+
+
+def get_weather_pic(pic_str, keys):
+    buf = []
+    for f in keys:
+        if pic_str.find(f.decode('utf8')) != -1:
+            buf.append(f)
+    return buf
+
+
+def get_spec_weather(pic_str, reg):
+    special = None
+    pattern = re.compile(reg)
+    special = re.findall(pattern, pic_str)
+    return special
+
+
+def find_weather(pre_pic, post_pic, reg, flag):
+    temp = []
+    if len(get_spec_weather(pre_pic, reg)) > 0:
+        temp.append(flag)
+    else:
+        weather_buf = get_weather_pic(pre_pic, weather_pic)
+        if len(weather_buf) != 0:
+            temp.append(weather_buf[-1])
+    if len(get_spec_weather(post_pic, reg)) > 0:
+        temp.append(flag)
+    else:
+        weather_buf = get_weather_pic(post_pic, weather_pic)
+        if len(weather_buf) != 0:
+            temp.append(weather_buf[-1])
+    return temp
 
 
 class get_forecast(Resource):
@@ -356,14 +391,60 @@ class get_forecast(Resource):
         req = urllib2.Request(forecast_url, headers=header)
         response = urllib2.urlopen(req).read()
         response = json.loads(response)
-        # pic_str = response['weatherpic']
-        # pic_buf = []
-        # for f in weather_pic:
-        #     if pic_str.find(f) != -1:
-        #         pic_buf.append(f)
-        # if len(pic_buf) > 0:
-        #     for ele in pic_buf:
-        #         pic_buf[pic_buf.index('有雨')]
+        result = []
+        for n in response:
+            temp = []
+            weather_state = n['weatherpic']
+            if weather_state.find('有'.decode('utf8')) == -1:
+                weather_buf = get_weather_pic(weather_state, weather_pic)
+                if len(weather_buf) != 0:
+                    if len(weather_buf) == 1:
+                        temp = [weather_buf[0]] * 2
+                    else:
+                        temp.append(weather_buf[0])
+                        temp.append(weather_buf[-1])
+                else:
+                    temp = ['晴', '多云']
+            else:
+                if weather_state.find('转'.decode('utf8')) != -1:
+                    buf = weather_state.split('转'.decode('utf8'))
+                    rain_buf = find_weather(buf[0], buf[-1], r'雨', '小雨')
+                    if len(rain_buf) >= 2:
+                        temp.append(rain_buf[0])
+                        temp.append(rain_buf[-1])
+                    else:
+                        snow_buf = find_weather(buf[0], buf[-1], r'雪', '小雪')
+                        if len(snow_buf) >= 2:
+                            temp.append(snow_buf[0])
+                            temp.append(snow_buf[-1])
+                        else:
+                            if get_spec_weather(weather_state,
+                                                r'重') is not None:
+                                temp = ['阴', '重度雾霾']
+                            elif get_spec_weather(weather_state,
+                                                  r'中') is not None:
+                                temp = ['阴', '中度雾霾']
+                            elif get_spec_weather(weather_state,
+                                                  r'轻') is not None:
+                                temp = ['阴', '轻度雾霾']
+                            else:
+                                temp = ['阴', '多云']
+                else:
+                    if get_spec_weather(weather_state, r'雨') is not None:
+                        temp = ['小雨', '小雨']
+                    elif get_spec_weather(weather_state, r'雪') is not None:
+                        temp = ['小雪', '小雪']
+                    elif get_spec_weather(weather_state, r'霾') is not None:
+                        if get_spec_weather(weather_state, r'重') is not None:
+                            temp = ['阴', '重度雾霾']
+                        elif get_spec_weather(weather_state, r'中') is not None:
+                            temp = ['阴', '中度雾霾']
+                        else:
+                            temp = ['阴', '轻度雾霾']
+                    else:
+                        temp = ['多云', '阴']
+            n['weatherpic'] = temp
+            result.append(n)
         return {'status': 'success', "data": response}
 
 

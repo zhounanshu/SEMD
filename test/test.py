@@ -41,15 +41,18 @@ reload(sys)
 #             os.rmdir(src)
 #         except:
 #             pass
-l = ['阴', '多云', '有', '雨']
+l = ['阴', '多云']
 pic_str = '阴有的雨转多云多云有的雨'
 pic_buf = []
 reg = r'有.*?雨'
 pattern = re.compile(reg)
 special = re.findall(pattern, pic_str)
+temp = []
 print len(special)
 for a in special:
-    print a[0]
+    temp.append((a.decode('utf8')[0]+ a.decode('utf8')[-1]).encode('utf8'))
+for n in temp:
+    print n
 for f in l:
     if pic_str.find(f) != -1:
         pic_buf.append(f)
