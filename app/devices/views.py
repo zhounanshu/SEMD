@@ -55,7 +55,7 @@ class devResource(Resource):
             return {'status': 'success', 'mesg': "删除设备成功!"}
         except:
             dev = device.query.filter_by(device_mac=args['dev_mac']).first()
-            if dev.id is None:
+            if dev is None:
                 return {'status': 'fail', 'mesg': '设备不存在!!'}
             return {'status': 'fail', 'mesg': "删除设备失败!"}
 

@@ -301,6 +301,7 @@ class get_alarm(Resource):
 
 
 class alarm_img(Resource):
+
     def get(self):
         img_name = request.args['img_name']
         path = os.path.split(os.path.realpath(__file__))[0] + '/alarm_pic'
@@ -341,6 +342,10 @@ class get_realtime(Resource):
         temp['aqi'] = aqi
         return {'status': 'success', "data": temp}
 
+weather_pic = ['晴', '多云', '阴', '小雨', '小雪', '阵雨', '中雨', '中雪', '雷阵雨',
+               '雨夹雪', '大雨', '大雪', '暴雨', '暴雪', '大暴雨', '特大暴雨', '冰雹',
+               '沙尘暴', '雾', '浮尘', '扬尘', '扬沙', '强沙尘暴', '有雨']
+
 
 class get_forecast(Resource):
 
@@ -351,6 +356,14 @@ class get_forecast(Resource):
         req = urllib2.Request(forecast_url, headers=header)
         response = urllib2.urlopen(req).read()
         response = json.loads(response)
+        # pic_str = response['weatherpic']
+        # pic_buf = []
+        # for f in weather_pic:
+        #     if pic_str.find(f) != -1:
+        #         pic_buf.append(f)
+        # if len(pic_buf) > 0:
+        #     for ele in pic_buf:
+        #         pic_buf[pic_buf.index('有雨')]
         return {'status': 'success', "data": response}
 
 
