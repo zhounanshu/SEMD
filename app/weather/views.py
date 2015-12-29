@@ -250,10 +250,15 @@ class alarm(Resource):
         result = []
         for elem in data:
             if elem['level'] != "解除".decode('utf-8'):
-                level_code = alarm_levels.index(elem['level'].encode('utf-8'))
-                type_code = types[elem['type'].encode('utf-8')]
-                img_name = type_code + str(level_code)
-                elem['img_name'] = img_name
+                if elem['level'] is not None:
+                    level_code = alarm_levels.index(
+                        elem['level'].encode('utf-8'))
+                    type_code = types[elem['type'].encode('utf-8')]
+                    img_name = type_code + str(level_code)
+                    elem['img_name'] = img_name
+                    del elem['id']
+                else:
+                    return {'mesg': '数据缺失!'}
             else:
                 elem['img_name'] = None
                 del elem['id']
