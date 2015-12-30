@@ -40,7 +40,7 @@ class user(Resource):
         parser.add_argument('name')
         parser.add_argument('email', type=str)
         parser.add_argument('province')
-        parser.add_argument('sex', type=str)
+        parser.add_argument('sex')
         parser.add_argument('district')
         args = parser.parse_args(strict=True)
         record = User(args['username'], args['password'],
