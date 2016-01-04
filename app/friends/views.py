@@ -69,3 +69,19 @@ class friend(Resource):
 
     def put(self):
         pass
+
+
+class searchFriend(Resource):
+
+    def get(self):
+        name = request.args['username']
+        users = User.query.filter(
+            User.username.ilike("%" + name + "%")).all()
+        result = []
+        if len(users) == 0:
+            return {'status': 'success', 'data': result}
+        else:
+            for user in users:
+                username = user.username
+                result.append(username)
+            return {'status': 'success', 'data': result}

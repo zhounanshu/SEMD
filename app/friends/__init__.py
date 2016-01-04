@@ -8,3 +8,4 @@ friends_api = Api(Friends)
 
 from .views import *
 friends_api.add_resource(friend, '/v1/friend')
+friends_api.add_resource(searchFriend, '/v1/search/friend')
