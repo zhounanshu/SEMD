@@ -28,4 +28,6 @@ def create_app(cnf):
     app.register_blueprint(imgBlueprint)
     from .mycity import myCity_blueprint
     app.register_blueprint(myCity_blueprint)
+    from .rank import Ranks
+    app.register_blueprint(Ranks)
     return app
