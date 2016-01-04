@@ -17,8 +17,9 @@ class friend(Resource):
         names = []
         for person in friend:
             friend_infor = {}
-            friend_infor['id'] = person.user.id
-            friend_infor['name'] = person.user.name
+            friend_infor['id'] = person.friend_id
+            friend_infor['name'] = User.query.filter_by(
+                id=person.friend_id).first().name
             names.append(friend_infor)
         temp = {}
         temp['friends'] = names

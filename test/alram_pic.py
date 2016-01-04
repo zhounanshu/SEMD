@@ -39,5 +39,4 @@ for path in getImg(html):
     img_url = url + path
     img = getHtml(img_url)
     i += 1
-    save_file(pic_folder, str(i)+ '.jpg', img)
-
+    save_file(pic_folder, str(i) + '.jpg', img)
