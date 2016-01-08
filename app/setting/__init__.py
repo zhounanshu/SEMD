@@ -8,3 +8,4 @@ set_api = Api(userSet)
 
 from .views import *
 set_api.add_resource(viewSet, '/v1/user/setting')
+set_api.add_resource(feed, '/v1/user/feed')

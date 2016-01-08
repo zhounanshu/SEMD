@@ -26,6 +26,7 @@ class User(db.Model):
     usersetting = db.relationship(
         'userSetting', backref='user', lazy='dynamic')
     sport_data = db.relationship('sport', backref='user', lazy='dynamic')
+    feed_back = db.relationship('feedBack', backref='user', lazy='dynamic')
 
     def __init__(
             self, username, password, email, name,
@@ -322,3 +323,18 @@ class sport(db.Model):
         self.pressure = pressure
         self.uvIndex = uvIndex
         self.distance = distance
+
+class feedBack(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    advice = db.Column(db.Text)
+    post_time = db.Column(db.String(255))
+    handle = db.Column(db.String(10))
+    handle_time = db.Column(db.String(255))
+
+    def __init__(self, user_id, advice, post_time, handle):
+        self.user_id = user_id
+        self.advice = advice
+        self.post_time = post_time
+        self.handle = handle
+
