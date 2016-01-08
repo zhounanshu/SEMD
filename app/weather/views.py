@@ -575,3 +575,45 @@ class autoStation(Resource):
         if result is None:
             return {'status': 'fail', 'mesg': '缺失数据!'}
         return {'mesg': '自动站信息', 'status': 'success', 'data': result}
+
+class weatherLocation(Resource):
+
+    def get(self):
+        jd = request.args['jd']
+        wd = request.args['wd']
+        header = {"Accept": " application/json",
+                  "Content-Type": " application/json"}
+        url = loca_url + "jd=" + jd + '&' + "wd=" + wd
+        req = urllib2.Request(url , headers=header)
+        response = urllib2.urlopen(req).read()
+        result = json.loads(response)
+        temp = {}
+        pattern_d = re.compile('\d{4}-\d{2}-\d{2}.*?')
+        pattern_h = re.compile('\d{2}:\d{2}:\d{2}.*?')
+        s = result['datetime']
+        d_temp = re.findall(pattern_d, s)
+        h_temp = re.findall(pattern_h, s)
+        if len(d_temp) > 0 and len(h_temp) > 0:
+            time = d_temp[0] + ' ' + h_temp[0]
+        else:
+            time = ''
+        temp['datetime'] = time
+        temp['pressure'] = result['pressure']
+        temp['tempe'] = result['tempe']
+        temp['wind_direction'] = result['wind_direction']
+        temp['wind_speed'] = result['wind_speed']
+        if not isData(temp['wind_speed']):
+            temp['wind_speed'] = 0
+        if not isData(temp['wind_direction']):
+            temp['wind_direction'] = 0
+        temp['wind_speed'] = str(wind_speed(temp['wind_speed'])) + '级'
+        temp['wind_direction'] = wind_direct(
+            temp['wind_direction']) + '风'
+        aqi_req = urllib2.Request(aqi_url, headers=header)
+        aqi_response = urllib2.urlopen(aqi_req).read()
+        aqi = json.loads(aqi_response)['aqi']
+        if aqi is None:
+            return {'status': "fail", 'mesg': "aqi数据缺失!"}
+        temp['aqi'] = aqi
+        return {'status': 'success', "data": temp}
+

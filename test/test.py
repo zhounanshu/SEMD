@@ -4,6 +4,7 @@ import urllib2
 import json
 import sys
 import os
+import time
 import tempfile
 import re
 
@@ -41,23 +42,31 @@ reload(sys)
 #             os.rmdir(src)
 #         except:
 #             pass
-l = ['阴', '多云']
-pic_str = '阴有的雨转多云多云有的雨'
-pic_buf = []
-reg = r'有.*?雨'
-pattern = re.compile(reg)
-special = re.findall(pattern, pic_str)
-temp = []
-print len(special)
-for a in special:
-    temp.append((a.decode('utf8')[0]+ a.decode('utf8')[-1]).encode('utf8'))
-for n in temp:
-    print n
-for f in l:
-    if pic_str.find(f) != -1:
-        pic_buf.append(f)
-for ele in pic_buf:
-    if ele == '有雨':
-        pic_buf[pic_buf.index(ele)] = '小雨'
-for ele in pic_buf:
-    print ele
+# l = ['阴', '多云']
+# pic_str = '阴有的雨转多云多云有的雨'
+# pic_buf = []
+# reg = r'有.*?雨'
+# pattern = re.compile(reg)
+# special = re.findall(pattern, pic_str)
+# temp = []
+# print len(special)
+# for a in special:
+#     temp.append((a.decode('utf8')[0]+ a.decode('utf8')[-1]).encode('utf8'))
+# for n in temp:
+#     print n
+# for f in l:
+#     if pic_str.find(f) != -1:
+#         pic_buf.append(f)
+# for ele in pic_buf:
+#     if ele == '有雨':
+#         pic_buf[pic_buf.index(ele)] = '小雨'
+# for ele in pic_buf:
+#     print ele
+
+s = "2016-01-08T17:50:00.000+08:00"
+pattern_d = re.compile('\d{4}-\d{2}-\d{2}.*?')
+pattern_h = re.compile('\d{2}:\d{2}:\d{2}.*?')
+d_temp = re.findall(pattern_d, s)[0]
+h_temp = re.findall(pattern_h, s)[0]
+print d_temp + ' ' + h_temp
+

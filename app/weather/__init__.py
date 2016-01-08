@@ -23,3 +23,5 @@ weather_api.add_resource(realWether, '/v1/weather/realtime/upload')
 weather_api.add_resource(realAqi, '/v1/aqi/realtime/upload')
 weather_api.add_resource(foreWeat, '/v1/weather/forecast/upload')
 weather_api.add_resource(wea_Station, '/v1/weather/station/upload')
+# 根据经纬度自动定位
+weather_api.add_resource(weatherLocation, '/v1/weather/location/realtime')
