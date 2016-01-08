@@ -36,6 +36,8 @@ class countRank(Resource):
             ten_rank.append(temp)
         result = {}
         result['user_rank'] = user_rank + 1
+        for i in range(len(ten_rank)):
+            ten_rank[i]['user_rank'] = str(i + 1)
         result['ten_rank'] = ten_rank
         return {"status": "success", 'data': result}
 

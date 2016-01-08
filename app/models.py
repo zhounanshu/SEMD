@@ -285,8 +285,9 @@ class userSetting(db.Model):
     pressure_H = db.Column(db.String(255))
     pressure_L = db.Column(db.String(255))
 
-    def __init__(self, tempe_H, tempe_L, humi_H,
+    def __init__(self, user_id, tempe_H, tempe_L, humi_H,
                  humi_L, pressure_H, pressure_L):
+        self.user_id = user_id
         self.tempe_H = tempe_H
         self.tempe_L = tempe_L
         self.humi_H = humi_H
