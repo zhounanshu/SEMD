@@ -600,6 +600,7 @@ class weatherLocation(Resource):
         temp['datetime'] = time
         temp['pressure'] = result['pressure']
         temp['tempe'] = result['tempe']
+        temp['humi'] = result['humi']
         temp['wind_direction'] = result['wind_direction']
         temp['wind_speed'] = result['wind_speed']
         if not isData(temp['wind_speed']):
