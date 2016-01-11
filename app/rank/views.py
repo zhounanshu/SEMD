@@ -32,10 +32,14 @@ class countRank(Resource):
             temp = {}
             record = User.query.filter_by(id=id).first()
             temp['user_id'] = id
+            temp['count'] = devData.query.filter_by(user_id=id).count()
             temp['username'] = record.username
             ten_rank.append(temp)
         result = {}
-        result['user_rank'] = user_rank + 1
+        user_infor = {}
+        user_infor['count'] = devData.query.filter_by(user_id=id).count()
+        user_infor['user_rank'] = user_rank + 1
+        result['user_infor'] = user_infor
         for i in range(len(ten_rank)):
             ten_rank[i]['user_rank'] = str(i + 1)
         result['ten_rank'] = ten_rank
