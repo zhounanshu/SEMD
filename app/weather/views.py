@@ -566,6 +566,7 @@ class autoStation(Resource):
                     buf['latitude'] = location.latitude
                     buf['tempe'] = record['tempe']
                     buf['rain'] = record['rain']
+                    buf['location'] = location.site_name
                     buf['wind_direction'] = wind_direct(
                         record['wind_direction']) + '风'
                     buf['wind_speed'] = str(

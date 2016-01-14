@@ -115,6 +115,7 @@ class reltiPeople(Resource):
                 if wind_direct(record['wind_direction']) is not None and wind_speed(record['wind_speed']) is not None:
                     buf['longitude'] = location.longitude
                     buf['latitude'] = location.latitude
+                    buf['location'] = location.site_name
                     buf['tempe'] = record['tempe']
                     buf['rain'] = record['rain']
                     buf['wind_direction'] = wind_direct(
