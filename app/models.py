@@ -292,7 +292,7 @@ class userSetting(db.Model):
         self.tempe_H = tempe_H
         self.tempe_L = tempe_L
         self.humi_H = humi_H
-        self.humi = humi_L
+        self.humi_L = humi_L
         self.pressure_H = pressure_H
         self.pressure_L = pressure_L
 

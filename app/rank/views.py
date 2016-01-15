@@ -19,7 +19,7 @@ class countRank(Resource):
         for show in shows:
             rank_container.append(show.user_id)
         if int(user_id) not in rank_container:
-            user_rank = -1
+            user_rank = devData.query.group_by(devData.user_id).count()
         else:
             user_rank = rank_container.index(int(user_id))
         ten_rank = []
@@ -27,7 +27,7 @@ class countRank(Resource):
         if len(rank_container) < 10:
             buf = rank_container
         else:
-            buf = rank_container[: 10]
+            buf = rank_container[: 11]
         for id in buf:
             temp = {}
             record = User.query.filter_by(id=id).first()
