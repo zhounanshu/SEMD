@@ -155,25 +155,26 @@ class env_history(Resource):
                         t_buf['tempe'] = result.temperature
                 t_buf['time'] = p
                 tempe_list.append(t_buf)
-            # for result in results:
-            #     t_buf = {}
-            #     t_buf['time'] = result.datatime
-            #     t_buf['tempe'] = result.temperature
-            #     tempe_list.append(t_buf)
             return {'status': 'success', "data": tempe_list}
         if item == 'humi':
             humi_list = []
-            for result in results:
+            for p in timePts:
                 h_buf = {}
-                h_buf['time'] = result.datatime
-                h_buf['humi'] = result.humidity
+                h_buf['humi'] = 0
+                for result in results:
+                    if abs(strTotsp(result.datatime) - strTotsp(p)) < 120:
+                        h_buf['humi'] = result.humidity
+                h_buf['time'] = p
                 humi_list.append(h_buf)
             return {'status': 'success', "data": humi_list}
         if item == 'uv':
             uv_list = []
-            for result in results:
+            for p in timePts:
                 u_buf = {}
-                u_buf['time'] = result.datatime
-                u_buf['uv'] = result.uvIndex
+                u_buf['uv'] = 0
+                for result in results:
+                    if abs(strTotsp(result.datatime) - strTotsp(p)) < 120:
+                        u_buf['uv'] = result.uvIndex
+                u_buf['time'] = p
                 uv_list.append(u_buf)
             return {'status': 'success', "data": uv_list}
