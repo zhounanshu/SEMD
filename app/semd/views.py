@@ -4,6 +4,7 @@ from flask.ext.restful import Resource
 from flask.ext.restful import reqparse
 from flask import request
 import datetime
+import time
 from ..models import *
 from ..lib.util import *
 
@@ -113,6 +114,10 @@ class reltiPerson(Resource):
         return {'status': 'success', "data": result}
 
 
+def strTotsp(arg):
+    return int(time.mktime(time.strptime(arg, '%Y-%m-%d %H:%M:%S')))
+
+
 class env_history(Resource):
 
     def get(self):
@@ -125,19 +130,36 @@ class env_history(Resource):
             user_id=id).order_by('datatime desc').first()
         if record is None:
             return {'status': 'fail', 'mesg': '你还未使用设备!'}, 200
-        base_time = datetime.datetime.strptime(
-            record.datatime, "%Y-%m-%d %H:%M:%S")
-        start_time = base_time - datetime.timedelta(days=1)
+        # base_time = datetime.datetime.strptime(
+        #     record.datatime, "%Y-%m-%d %H:%M:%S")
+        # start_time = base_time - datetime.timedelta(days=1)
+        base_time = record.datatime
+        start_time = base_time[:11] + "00:00:00"
+        # 获取显示总点数, 每隔5分钟一个点
+        ponits = (strTotsp(base_time) - strTotsp(start_time)) / 300
+        timePts = []
+        for i in range(ponits + 1):
+            Pt = datetime.datetime.strptime(
+                start_time, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=5 * i)
+            timePts.append(Pt.strftime('%Y-%m-%d %H:%M:%S'))
         results = devData.query.filter(
-            devData.datatime >= start_time.strftime('%Y-%m-%d %H:%M:%S'),
+            devData.datatime >= start_time,
             devData.datatime <= record.datatime).all()
         if item == 'tempe':
             tempe_list = []
-            for result in results:
+            for p in timePts:
                 t_buf = {}
-                t_buf['time'] = result.datatime
-                t_buf['tempe'] = result.temperature
+                t_buf['tempe'] = 0
+                for result in results:
+                    if abs(strTotsp(result.datatime) - strTotsp(p)) < 120:
+                        t_buf['tempe'] = result.temperature
+                t_buf['time'] = p
                 tempe_list.append(t_buf)
+            # for result in results:
+            #     t_buf = {}
+            #     t_buf['time'] = result.datatime
+            #     t_buf['tempe'] = result.temperature
+            #     tempe_list.append(t_buf)
             return {'status': 'success', "data": tempe_list}
         if item == 'humi':
             humi_list = []
