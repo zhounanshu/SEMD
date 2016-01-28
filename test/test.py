@@ -63,10 +63,25 @@ reload(sys)
 # for ele in pic_buf:
 #     print ele
 
-s = "2016-01-08T17:50:00.000+08:00"
-pattern_d = re.compile('\d{4}-\d{2}-\d{2}.*?')
-pattern_h = re.compile('\d{2}:\d{2}:\d{2}.*?')
-d_temp = re.findall(pattern_d, s)[0]
-h_temp = re.findall(pattern_h, s)[0]
-print d_temp + ' ' + h_temp
-
+# s = "2016-01-08T17:50:00.000+08:00"
+# pattern_d = re.compile('\d{4}-\d{2}-\d{2}.*?')
+# pattern_h = re.compile('\d{2}:\d{2}:\d{2}.*?')
+# d_temp = re.findall(pattern_d, s)[0]
+# h_temp = re.findall(pattern_h, s)[0]
+# print d_temp + ' ' + h_temp
+buf = {}
+L = []
+buf['test'] = 3
+L.append(buf)
+print L
+buf = {}
+buf['test'] = 5
+L.append(buf)
+def f4(seq):
+    # order preserving
+    noDupes = []
+    [noDupes.append(i) for i in seq if not noDupes.count(i)]
+    return noDupes
+print f4(L)
+l = [1 ,2 ,3 ,3, 4 , 5,]
+print l.index(3)

@@ -118,6 +118,13 @@ def strTotsp(arg):
     return int(time.mktime(time.strptime(arg, '%Y-%m-%d %H:%M:%S')))
 
 
+def f4(seq):
+    # order preserving
+    noDupes = []
+    [noDupes.append(i) for i in seq if not noDupes.count(i)]
+    return noDupes
+
+
 class env_history(Resource):
 
     def get(self):
@@ -144,37 +151,100 @@ class env_history(Resource):
             timePts.append(Pt.strftime('%Y-%m-%d %H:%M:%S'))
         results = devData.query.filter(
             devData.datatime >= start_time,
-            devData.datatime <= record.datatime).all()
+            devData.datatime <= record.datatime, devData.user_id==id).all()
         if item == 'tempe':
             tempe_list = []
-            for p in timePts:
+            timeL = []
+            values = []
+            # for p in timePts:
+            #     t_buf = {}
+            #     t_buf['tempe'] = ''
+            #     for result in results:
+            #         if abs(strTotsp(result.datatime) - strTotsp(p)) < 120:
+            #             t_buf['tempe'] = result.temperature
+            #     t_buf['time'] = p
+            #     tempe_list.append(t_buf)
+            for result in results:
                 t_buf = {}
-                t_buf['tempe'] = 0
-                for result in results:
-                    if abs(strTotsp(result.datatime) - strTotsp(p)) < 120:
-                        t_buf['tempe'] = result.temperature
-                t_buf['time'] = p
+                buf_value = ''
+                dataTi = result.datatime
+                timeUnif = dataTi[:14] + "00:00"
+                counts = (strTotsp(dataTi) - strTotsp(timeUnif)) / 300
+                formatT = datetime.datetime.strptime(
+                    timeUnif, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=5 * counts)
+                if abs(strTotsp(dataTi) - strTotsp(formatT.strftime('%Y-%m-%d %H:%M:%S'))) < 120:
+                    buf_value = result.temperature
+                    buf_time = formatT.strftime('%Y-%m-%d %H:%M:%S')
+                    timeL.append(buf_time)
+                    values.append(buf_value)
+            noDupes = f4(timeL)
+            for i in noDupes:
+                t_buf = {}
+                t_buf['time'] = i
+                t_buf['tempe'] = values[timeL.index(i)]
                 tempe_list.append(t_buf)
             return {'status': 'success', "data": tempe_list}
         if item == 'humi':
             humi_list = []
-            for p in timePts:
-                h_buf = {}
-                h_buf['humi'] = 0
-                for result in results:
-                    if abs(strTotsp(result.datatime) - strTotsp(p)) < 120:
-                        h_buf['humi'] = result.humidity
-                h_buf['time'] = p
-                humi_list.append(h_buf)
+            timeL = []
+            values = []
+            # for p in timePts:
+            #     h_buf = {}
+            #     h_buf['humi'] = 0
+            #     for result in results:
+            #         if abs(strTotsp(result.datatime) - strTotsp(p)) < 120:
+            #             h_buf['humi'] = result.humidity
+            #     h_buf['time'] = p
+            #     humi_list.append(h_buf)
+            for result in results:
+                t_buf = {}
+                buf_value = ''
+                dataTi = result.datatime
+                timeUnif = dataTi[:14] + "00:00"
+                counts = (strTotsp(dataTi) - strTotsp(timeUnif)) / 300
+                formatT = datetime.datetime.strptime(
+                    timeUnif, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=5 * counts)
+                if abs(strTotsp(dataTi) - strTotsp(formatT.strftime('%Y-%m-%d %H:%M:%S'))) < 120:
+                    buf_value = result.humidity
+                    buf_time = formatT.strftime('%Y-%m-%d %H:%M:%S')
+                    timeL.append(buf_time)
+                    values.append(buf_value)
+            noDupes = f4(timeL)
+            for i in noDupes:
+                t_buf = {}
+                t_buf['time'] = i
+                t_buf['humi'] = values[timeL.index(i)]
+                humi_list.append(t_buf)
             return {'status': 'success', "data": humi_list}
         if item == 'uv':
             uv_list = []
-            for p in timePts:
-                u_buf = {}
-                u_buf['uv'] = 0
-                for result in results:
-                    if abs(strTotsp(result.datatime) - strTotsp(p)) < 120:
-                        u_buf['uv'] = result.uvIndex
-                u_buf['time'] = p
-                uv_list.append(u_buf)
+            timeL = []
+            values = []
+            # for p in timePts:
+            #     u_buf = {}
+            #     u_buf['uv'] = 0
+            #     for result in results:
+            #         if abs(strTotsp(result.datatime) - strTotsp(p)) < 120:
+            #             u_buf['uv'] = result.uvIndex
+            #     u_buf['time'] = p
+            #     uv_list.append(u_buf)
+            for result in results:
+                t_buf = {}
+                buf_value = ''
+                dataTi = result.datatime
+                timeUnif = dataTi[:14] + "00:00"
+                counts = (strTotsp(dataTi) - strTotsp(timeUnif)) / 300
+                formatT = datetime.datetime.strptime(
+                    timeUnif, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=5 * counts)
+                if abs(strTotsp(dataTi) - strTotsp(formatT.strftime('%Y-%m-%d %H:%M:%S'))) < 120:
+                    buf_value = result.uvIndex
+                    buf_time = formatT.strftime('%Y-%m-%d %H:%M:%S')
+                    timeL.append(buf_time)
+                    values.append(buf_value)
+            noDupes = f4(timeL)
+            for i in noDupes:
+                t_buf = {}
+                t_buf['time'] = i
+                t_buf['humi'] = values[timeL.index(i)]
+                uv_list.append(t_buf)
             return {'status': 'success', "data": uv_list}
