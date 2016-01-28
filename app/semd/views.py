@@ -245,6 +245,6 @@ class env_history(Resource):
             for i in noDupes:
                 t_buf = {}
                 t_buf['time'] = i
-                t_buf['humi'] = values[timeL.index(i)]
+                t_buf['uv'] = values[timeL.index(i)]
                 uv_list.append(t_buf)
             return {'status': 'success', "data": uv_list}
