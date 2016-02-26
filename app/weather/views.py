@@ -449,8 +449,8 @@ class get_forecast(Resource):
                     else:
                         temp = ['多云', '阴']
             n['weatherpic'] = temp
-            n['tempe_l'] = n['tempe'].split('~')[0]
-            n['tempe_h'] = n['tempe'].split('~')[1][:-1]
+            # n['tempe_l'] = n['tempe'].split('~')[0]
+            # n['tempe_h'] = n['tempe'].split('~')[1][:-1]
             result.append(n)
         return {'status': 'success', "data": response}
 

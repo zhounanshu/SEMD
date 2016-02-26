@@ -35,8 +35,8 @@ class userView(Resource):
         if user.province == '':
             userInfor['province'] = '未设定'
         # xiugai
-        userInfor['id'] = user.id
-        userInfor['img'] = URI + str(id)
+        # userInfor['id'] = user.id
+        # userInfor['img'] = URI + str(id)
         if user is None:
             return {'status': 'fail', "mesg": "该用户不存在!"}
         return {'status': 'success', "data": userInfor}, 200
