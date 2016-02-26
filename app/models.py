@@ -364,3 +364,24 @@ class verTab(db.Model):
     def __init__(self, username, verCode):
         self.username = username
         self.verCode = verCode
+
+
+class crorrection(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    datatime = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    longitude = db.Column(db.String(255), nullable=False)
+    latitude = db.Column(db.String(255), nullable=False)
+    weather = db.Column(db.String(255))
+    tempe = db.Column(db.String(255))
+    content = db.Column(db.Text)
+
+    def __init__(self, datatime, user_id, longitude, latitude,
+                 weather, tempe, content):
+        self.datatime = datatime
+        self.user_id = user_id
+        self.longitude = longitude
+        self.latitude = latitude
+        self.weather = weather
+        self.tempe = tempe
+        self.content = content

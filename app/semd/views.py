@@ -68,6 +68,29 @@ class usrResource(Resource):
             return {'status': 'fail', 'mesg': '数据上传失败!'}, 200
 
 
+class usrCorrect(Resource):
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('datatime', type=str)
+        parser.add_argument('user_id', type=str)
+        parser.add_argument('weather')
+        parser.add_argument('tempe', type=str)
+        parser.add_argument('longitude', type=str)
+        parser.add_argument('latitude', type=str)
+        parser.add_argument('content')
+        args = parser.parse_args(strict=True)
+        record = crorrection(args['datatime'], args['user_id'],
+                             args['longitude'], args['latitude'],
+                             args['weather'], args['tempe'], args['content'])
+        try:
+            db.session.add(record)
+            db.session.commit()
+            return {'status': 'success', 'mesg': '数据上传成功!'}, 200
+        except:
+            return {'status': 'fail', 'mesg': '数据上传失败!'}, 200
+
+
 class sportResource(Resource):
 
     def post(self):
@@ -151,7 +174,7 @@ class env_history(Resource):
             timePts.append(Pt.strftime('%Y-%m-%d %H:%M:%S'))
         results = devData.query.filter(
             devData.datatime >= start_time,
-            devData.datatime <= record.datatime, devData.user_id==id).all()
+            devData.datatime <= record.datatime, devData.user_id == id).all()
         if item == 'tempe':
             tempe_list = []
             timeL = []
