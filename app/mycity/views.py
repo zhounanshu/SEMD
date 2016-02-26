@@ -128,7 +128,7 @@ class reltiPeople(Resource):
             return {'status': 'fail', 'mesg': '自动站缺失数据!'}
 
         base_time = datetime.datetime.now()
-        forwd_time = base_time - datetime.timedelta(hours=2)
+        forwd_time = base_time - datetime.timedelta(hours=168)
         start_time = forwd_time.strftime('%Y-%m-%d %H:%M:%S')
         end_time = base_time.strftime('%Y-%m-%d %H:%M:%S')
         data_list = devData.query.filter(devData.datatime >= start_time,
