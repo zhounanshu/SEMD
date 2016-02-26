@@ -237,19 +237,44 @@ class signUp(Resource):
         parser.add_argument('password', type=str)
         parser.add_argument('verCode', type=str)
         args = parser.parse_args(strict=True)
-        code = verTab.query.filter_by(verCode=args['verCode']).first()
-        if code is None:
+        exit = User.query.filter_by(username=args['username']).first()
+        if exit is not None:
+            return {'status': 'fail', "mesg": "手机号已被注册"}, 200
+        code = verTab.query.filter_by(username=args['username']).first()
+        if code.verCode != args['verCode']:
             return {'status': 'fail', "mesg": "验证码错误"}, 200
         record = User(args['username'], args['password'],
                       '', '', '', '', '', '')
         try:
             db.session.add(record)
-            try:
-                db.session.commit()
-            except:
-                return {'status': 'fail', "mesg": "用户名已被注册!"}, 200
+            db.session.commit()
             user_id = record.id
             return {'status': 'success', "mesg": "用户注册成功!",
                     "data": {"userId": user_id}}, 200
         except:
-            return {'status': 'fail', 'mesg': '用户注册失败!'}
+            return {'status': 'fail', 'mesg': '用户注册失败!'}, 200
+
+
+class chPasswd(Resource):
+    def put(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('username')
+        parser.add_argument('password')
+        parser.add_argument('verCode')
+        args = parser.parse_args(strict=True)
+        record = User.query.filter_by(username=args['username']).first()
+        if record is None:
+            return {'status': 'fail', "mesg": "手机号输入错误"}, 200
+        # if record.verify_password(args['password']):
+        #     return {'status': 'fail', "mesg": "修改密码不能和原来密码相同"}, 200
+        code = verTab.query.filter_by(username=args['username']).first()
+        if code.verCode != args['verCode']:
+            return {'status': 'fail', "mesg": "验证码错误"}, 200
+        try:
+            db.session.add(record)
+            db.session.commit()
+            user_id = record.id
+            return {'status': 'success', "mesg": "密码修改成功",
+                    "data": {"userId": user_id}}, 200
+        except:
+            return {'status': 'fail', 'mesg': '密码修改失败'}, 200
