@@ -621,3 +621,15 @@ class weatherLocation(Resource):
             return {'status': "fail", 'mesg': "aqi数据缺失!"}
         temp['aqi'] = aqi
         return {'status': 'success', "data": temp}
+
+
+class get_disAla(Resource):
+    def get(self):
+        area = request.args['area']
+        header = {"Accept": " application/json",
+                  "Content-Type": " application/json"}
+        url = district_url + area.encode('utf8')
+        req = urllib2.Request(url, headers=header)
+        response = urllib2.urlopen(req).read()
+        result = json.loads(response)
+        return {'status': 'success', "data": result}

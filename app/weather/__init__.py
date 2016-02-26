@@ -25,3 +25,5 @@ weather_api.add_resource(foreWeat, '/v1/weather/forecast/upload')
 weather_api.add_resource(wea_Station, '/v1/weather/station/upload')
 # 根据经纬度自动定位
 weather_api.add_resource(weatherLocation, '/v1/weather/location/realtime')
+# 获取区县天气信息
+weather_api.add_resource(get_disAla, '/v1/weather/area')
