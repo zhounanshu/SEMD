@@ -18,4 +18,4 @@ class sendMail(Resource):
         msg.body = args['suggestion']
         msg.html = "<b>" + args['suggestion'] + "</b>"
         mail.send(msg)
-        return {'staus': 'ok'}
+        return {'staus': 'success', 'mesg': '邮件已发送'}
