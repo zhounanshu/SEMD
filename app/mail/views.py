@@ -10,11 +10,12 @@ class sendMail(Resource):
     def post(self):
         paser = reqparse.RequestParser()
         paser.add_argument('phone', type=str)
-        paser.add_argument('suggestion', type=str)
+        paser.add_argument('suggestion')
         args = paser.parse_args(strict=True)
-        content = args['suggestion']
-        msg = Message(content, recipients=["marvinzns@163.com"])
-        msg.body = "testing"
-        msg.html = "<b>testing</b>"
+        msg = Message(
+            '意见反馈',
+            recipients=["bobozns@126.com"])
+        msg.body = args['suggestion']
+        msg.html = "<b>" + args['suggestion'] + "</b>"
         mail.send(msg)
         return {'staus': 'ok'}
