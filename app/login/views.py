@@ -26,17 +26,6 @@ class userView(Resource):
         userInfor['name'] = user.name
         userInfor['district'] = user.district
         userInfor['sex'] = user.sex
-        if user.sex == "":
-            userInfor['sex'] = '男'
-        if user.birthday == '':
-            userInfor['birthday'] = '未设定'
-        if user.district == "":
-            userInfor['district'] = '未设定'
-        if user.province == '':
-            userInfor['province'] = '未设定'
-        # xiugai
-        # userInfor['id'] = user.id
-        # userInfor['img'] = URI + str(id)
         if user is None:
             return {'status': 'fail', "mesg": "该用户不存在!"}
         return {'status': 'success', "data": userInfor}, 200
@@ -45,16 +34,15 @@ class userView(Resource):
         pass
 
 
-class userInfor(Resource):
+class perInfor(Resource):
 
     def get(self, id):
         user = User.query.filter_by(id=id).first()
         userInfor = {}
         userInfor['username'] = user.username
         userInfor['birthday'] = user.birthday
-        userInfor['province'] = user.province
         userInfor['name'] = user.name
-        userInfor['district'] = user.district
+        userInfor['area'] = user.province + user.district
         userInfor['sex'] = user.sex
         if user.sex == "":
             userInfor['sex'] = '男'
@@ -64,7 +52,7 @@ class userInfor(Resource):
             userInfor['district'] = '未设定'
         if user.province == '':
             userInfor['province'] = '未设定'
-        userInfor['id'] = user.id
+        userInfor['id'] = str(user.id)
         userInfor['img'] = URI + str(id)
         if user is None:
             return {'status': 'fail', "mesg": "该用户不存在!"}
@@ -72,6 +60,7 @@ class userInfor(Resource):
 
     def delete(self, id):
         pass
+
 
 class user(Resource):
 
