@@ -45,6 +45,34 @@ class userView(Resource):
         pass
 
 
+class userInfor(Resource):
+
+    def get(self, id):
+        user = User.query.filter_by(id=id).first()
+        userInfor = {}
+        userInfor['username'] = user.username
+        userInfor['birthday'] = user.birthday
+        userInfor['province'] = user.province
+        userInfor['name'] = user.name
+        userInfor['district'] = user.district
+        userInfor['sex'] = user.sex
+        if user.sex == "":
+            userInfor['sex'] = '男'
+        if user.birthday == '':
+            userInfor['birthday'] = '未设定'
+        if user.district == "":
+            userInfor['district'] = '未设定'
+        if user.province == '':
+            userInfor['province'] = '未设定'
+        userInfor['id'] = user.id
+        userInfor['img'] = URI + str(id)
+        if user is None:
+            return {'status': 'fail', "mesg": "该用户不存在!"}
+        return {'status': 'success', "data": userInfor}, 200
+
+    def delete(self, id):
+        pass
+
 class user(Resource):
 
     def post(self):
@@ -187,10 +215,7 @@ class megVerif(Resource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('username', type=str)
-        parser.add_argument('password', type=str)
         args = parser.parse_args(strict=True)
-        if len(args['password']) < 6:
-            return {'status': 'fail', 'mesg': '密码长度不少于6位数'}, 200
         user = User.query.filter_by(username=args['username']).first()
         if user is not None:
             return {'status': 'fail', "mesg": "用户名已被注册!"}, 200
@@ -201,6 +226,8 @@ class megVerif(Resource):
         record = verTab.query.filter_by(username=args['username']).first()
         if record is None:
             record = verTab(args['username'], verCode)
+        else:
+            record.verCode = verCode
         try:
             db.session.add(record)
             db.session.commit()
