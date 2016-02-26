@@ -232,6 +232,22 @@ class friends(db.Model):
         self.friend_id = friend_id
 
 
+class application(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    friend_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
+    text = db.Column(db.Text)
+    handled = db.Column(db.String(10))
+    visible = db.Column(db.String(10))
+
+    def __init__(self, friend_id, user_id, text, handled, visible):
+        self.friend_id = friend_id
+        self.user_id = user_id
+        self.text = text
+        self.handled = handled
+        self.visible = visible
+
+
 class weaStation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     datetime = db.Column(db.String(255), nullable=False)
@@ -324,6 +340,7 @@ class sport(db.Model):
         self.uvIndex = uvIndex
         self.distance = distance
 
+
 class feedBack(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -338,3 +355,12 @@ class feedBack(db.Model):
         self.post_time = post_time
         self.handle = handle
 
+
+class verTab(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(255))
+    verCode = db.Column(db.String(255))
+
+    def __init__(self, username, verCode):
+        self.username = username
+        self.verCode = verCode

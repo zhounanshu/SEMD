@@ -449,6 +449,8 @@ class get_forecast(Resource):
                     else:
                         temp = ['多云', '阴']
             n['weatherpic'] = temp
+            n['tempe_l'] = n['tempe'].split('~')[0]
+            n['tempe_h'] = n['tempe'].split('~')[1][:-1]
             result.append(n)
         return {'status': 'success', "data": response}
 
@@ -577,6 +579,7 @@ class autoStation(Resource):
             return {'status': 'fail', 'mesg': '缺失数据!'}
         return {'mesg': '自动站信息', 'status': 'success', 'data': result}
 
+
 class weatherLocation(Resource):
 
     def get(self):
@@ -585,7 +588,7 @@ class weatherLocation(Resource):
         header = {"Accept": " application/json",
                   "Content-Type": " application/json"}
         url = loca_url + "jd=" + jd + '&' + "wd=" + wd
-        req = urllib2.Request(url , headers=header)
+        req = urllib2.Request(url, headers=header)
         response = urllib2.urlopen(req).read()
         result = json.loads(response)
         temp = {}
@@ -618,4 +621,3 @@ class weatherLocation(Resource):
             return {'status': "fail", 'mesg': "aqi数据缺失!"}
         temp['aqi'] = aqi
         return {'status': 'success', "data": temp}
-

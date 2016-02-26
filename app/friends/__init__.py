@@ -9,3 +9,6 @@ friends_api = Api(Friends)
 from .views import *
 friends_api.add_resource(friend, '/v1/friend')
 friends_api.add_resource(searchFriend, '/v1/search/friend')
+friends_api.add_resource(searchFrid, '/v1/query/freind')
+friends_api.add_resource(usrApply, '/v1/apply/freind')
+friends_api.add_resource(approv, '/v1/approved/freind')

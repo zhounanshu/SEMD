@@ -4,9 +4,13 @@ from flask import g, jsonify
 from flask.ext.restful import Resource
 from flask.ext.restful import reqparse
 from flask.ext.httpauth import HTTPBasicAuth
+import random
+import httplib
+import urllib
 from ..lib.util import *
 from ..models import *
 from . import Login
+from .. import URI
 auth = HTTPBasicAuth()
 
 
@@ -22,6 +26,17 @@ class userView(Resource):
         userInfor['name'] = user.name
         userInfor['district'] = user.district
         userInfor['sex'] = user.sex
+        if user.sex == "":
+            userInfor['sex'] = '男'
+        if user.birthday == '':
+            userInfor['birthday'] = '未设定'
+        if user.district == "":
+            userInfor['district'] = '未设定'
+        if user.province == '':
+            userInfor['province'] = '未设定'
+        # xiugai
+        userInfor['id'] = user.id
+        userInfor['img'] = URI + str(id)
         if user is None:
             return {'status': 'fail', "mesg": "该用户不存在!"}
         return {'status': 'success', "data": userInfor}, 200
@@ -67,7 +82,7 @@ class user(Resource):
         parser.add_argument('name')
         parser.add_argument('email', type=str)
         parser.add_argument('province')
-        parser.add_argument('sex', type=str)
+        parser.add_argument('sex')
         parser.add_argument('district')
         args = parser.parse_args(strict=True)
         user = User.query.filter_by(id=args['id']).first()
@@ -131,3 +146,93 @@ def verify_password(username_or_token, password):
             return False
     g.user = user
     return True
+
+sms_host = "sms.yunpian.com"
+port = 443
+# 版本号
+version = "v1"
+# 智能匹配模版短信接口的URI
+sms_send_uri = "/" + version + "/sms/send.json"
+apikey = "d9f53a96514423381bc3f315143a810e"
+
+
+def send_sms(apikey, text, mobile):
+    """
+    通用接口发短信
+    """
+    params = urllib.urlencode(
+        {'apikey': apikey, 'text': text, 'mobile': mobile})
+    headers = {
+        "Content-type": "application/x-www-form-urlencoded",
+        "Accept": "text/plain"}
+    conn = httplib.HTTPSConnection(sms_host, port=port, timeout=30)
+    conn.request("POST", sms_send_uri, params, headers)
+    response = conn.getresponse()
+    response_str = response.read()
+    conn.close()
+    return response_str
+
+
+def generate_verification_code():
+    code_list = []
+    for i in range(6):
+        for i in range(10):  # 0-9数字
+            code_list.append(str(i))
+    myslice = random.sample(code_list, 6)
+    verification_code = ''.join(myslice)
+    return verification_code
+
+
+class megVerif(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('username', type=str)
+        parser.add_argument('password', type=str)
+        args = parser.parse_args(strict=True)
+        if len(args['password']) < 6:
+            return {'status': 'fail', 'mesg': '密码长度不少于6位数'}, 200
+        user = User.query.filter_by(username=args['username']).first()
+        if user is not None:
+            return {'status': 'fail', "mesg": "用户名已被注册!"}, 200
+        # 修改为您要发送的手机号码，多个号码用逗号隔开
+        mobile = urllib.quote(args['username'])
+        # 修改为您要发送的短信内容
+        verCode = generate_verification_code()
+        record = verTab.query.filter_by(username=args['username']).first()
+        if record is None:
+            record = verTab(args['username'], verCode)
+        try:
+            db.session.add(record)
+            db.session.commit()
+        except:
+            return {'status': 'fail', 'mesg': '验证码发送失败'}, 200
+        text = '您的验证码是' + verCode + '【云片网】'
+        # 调用智能匹配模版接口发短信
+        print send_sms(apikey, text, mobile)
+        return {'status': 'success', 'mesg': '验证码已经发送'}, 200
+
+
+class signUp(Resource):
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('username', type=str)
+        parser.add_argument('password', type=str)
+        parser.add_argument('verCode', type=str)
+        args = parser.parse_args(strict=True)
+        code = verTab.query.filter_by(verCode=args['verCode']).first()
+        if code is None:
+            return {'status': 'fail', "mesg": "验证码错误"}, 200
+        record = User(args['username'], args['password'],
+                      '', '', '', '', '', '')
+        try:
+            db.session.add(record)
+            try:
+                db.session.commit()
+            except:
+                return {'status': 'fail', "mesg": "用户名已被注册!"}, 200
+            user_id = record.id
+            return {'status': 'success', "mesg": "用户注册成功!",
+                    "data": {"userId": user_id}}, 200
+        except:
+            return {'status': 'fail', 'mesg': '用户注册失败!'}
