@@ -235,7 +235,8 @@ class megVerif(Resource):
             return {'status': 'fail', 'mesg': '验证码发送失败'}, 200
         text = '您的验证码是' + verCode + '【云片网】'
         # 调用智能匹配模版接口发短信
-        print send_sms(apikey, text, mobile)
+        with open('log.txt', 'a+') as f:
+            f.write(send_sms(apikey, text, mobile) + '\n')
         return {'status': 'success', 'mesg': '验证码已经发送'}, 200
 
 
