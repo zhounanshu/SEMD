@@ -628,8 +628,19 @@ class get_disAla(Resource):
         area = request.args['area']
         header = {"Accept": " application/json",
                   "Content-Type": " application/json"}
+        # return {'area': area}
         url = district_url + area.encode('utf8')
         req = urllib2.Request(url, headers=header)
         response = urllib2.urlopen(req).read()
-        result = json.loads(response)
-        return {'status': 'success', "data": result}
+        response = json.loads(response)
+        result = []
+        for elem in response['data']:
+            if elem['level'] != "解除".decode('utf-8'):
+                level_code = alarm_levels.index(elem['level'].encdoe('utf-8'))
+                type_code = types[elem['type'].encode('utf-8')]
+                img_name = type_code + str(level_code)
+                elem['img_name'] = img_name
+            else:
+                elem['img_name'] = None
+                result.append(elem)
+        return {'status': 'success', "data": result, 'mesg': response['msg']}
