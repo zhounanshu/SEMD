@@ -9,6 +9,7 @@ from decimal import *
 from ..weather.config import *
 from ..models import *
 from ..lib.util import *
+from ..login.views import auth
 
 
 def isValid(data):
@@ -98,6 +99,7 @@ def distance(lat1, lng1, lat2, lng2):
 
 
 class reltiPeople(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
 

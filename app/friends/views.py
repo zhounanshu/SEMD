@@ -6,9 +6,11 @@ from flask import request
 from ..models import *
 from ..lib.util import *
 from .. import URI
+from ..login.views import auth
 
 
 class friend(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         user_id = request.args['user_id']
@@ -73,6 +75,7 @@ class friend(Resource):
 
 
 class searchFriend(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         name = request.args['username']
@@ -89,6 +92,7 @@ class searchFriend(Resource):
 
 
 class searchFrid(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         name = request.args['username']
@@ -131,6 +135,8 @@ class searchFrid(Resource):
 
 
 class usrApply(Resource):
+    decorators = [auth.login_required]
+
     def post(self):
         paser = reqparse.RequestParser()
         paser.add_argument('id', type=str)
@@ -192,6 +198,8 @@ class usrApply(Resource):
 
 
 class approv(Resource):
+    decorators = [auth.login_required]
+
     def post(self):
         paser = reqparse.RequestParser()
         paser.add_argument('id', type=str)

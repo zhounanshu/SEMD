@@ -7,9 +7,11 @@ import datetime
 import time
 from ..models import *
 from ..lib.util import *
+from ..login.views import auth
 
 
 class devResource(Resource):
+    decorators = [auth.login_required]
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -41,6 +43,7 @@ class devResource(Resource):
 
 
 class usrResource(Resource):
+    decorators = [auth.login_required]
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -69,6 +72,7 @@ class usrResource(Resource):
 
 
 class usrCorrect(Resource):
+    decorators = [auth.login_required]
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -92,6 +96,7 @@ class usrCorrect(Resource):
 
 
 class sportResource(Resource):
+    decorators = [auth.login_required]
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -119,7 +124,7 @@ class sportResource(Resource):
 
 
 class reltiPerson(Resource):
-
+    decorators = [auth.login_required]
     """获取geren用户实时信息"""
 
     def get(self):
@@ -150,6 +155,7 @@ def f4(seq):
 
 
 class env_history(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         id = request.args['user_id']

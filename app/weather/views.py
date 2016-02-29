@@ -12,6 +12,7 @@ import json
 from .config import *
 from ..models import *
 from ..lib.util import *
+from ..login.views import auth
 sys.path.append('..')
 
 
@@ -91,6 +92,7 @@ def wind_speed(wind_speed):
 
 
 class realWether(Resource):
+    decorators = [auth.login_required]
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -119,6 +121,7 @@ class realWether(Resource):
 
 
 class realAqi(Resource):
+    decorators = [auth.login_required]
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -140,6 +143,7 @@ class realAqi(Resource):
 
 
 class foreWeat(Resource):
+    decorators = [auth.login_required]
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -164,6 +168,7 @@ class foreWeat(Resource):
 
 
 class wea_Station(Resource):
+    decorators = [auth.login_required]
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -191,6 +196,7 @@ class wea_Station(Resource):
 
 
 class viewRelti(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         area = request.args['area']
@@ -213,6 +219,7 @@ class viewRelti(Resource):
 
 
 class viewForecast(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         area = request.args['area']
@@ -241,6 +248,7 @@ class viewForecast(Resource):
 
 
 class alarm(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         record = cityAlarm.query.order_by(cityAlarm.publishtime.desc()).all()
@@ -289,6 +297,7 @@ class alarm(Resource):
 
 
 class get_alarm(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         response = urllib2.urlopen(url).read()
@@ -307,6 +316,7 @@ class get_alarm(Resource):
 
 
 class alarm_img(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         img_name = request.args['img_name']
@@ -316,6 +326,7 @@ class alarm_img(Resource):
 
 
 class get_realtime(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         area = request.args['area']
@@ -388,6 +399,7 @@ def find_weather(pre_pic, post_pic, reg, flag):
 
 
 class get_forecast(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         area = request.args['area']
@@ -456,6 +468,7 @@ class get_forecast(Resource):
 
 
 class get_rain(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         lon = request.args['lon']
@@ -529,6 +542,7 @@ def distance(lat1, lng1, lat2, lng2):
 
 
 class get_qpf(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         header = {'Accept': 'application/json',
@@ -550,6 +564,7 @@ class get_qpf(Resource):
 
 
 class autoStation(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         header = {"Accept": " application/json",
@@ -581,6 +596,7 @@ class autoStation(Resource):
 
 
 class weatherLocation(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         jd = request.args['jd']
@@ -624,6 +640,7 @@ class weatherLocation(Resource):
 
 
 class get_disAla(Resource):
+    decorators = [auth.login_required]
     def get(self):
         area = request.args['area']
         header = {"Accept": " application/json",

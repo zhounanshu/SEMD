@@ -8,6 +8,7 @@ import random
 from flask import request
 from flask import send_file
 from ..models import *
+from ..login.views import auth
 
 
 def compress_img(img, w, h):
@@ -38,6 +39,7 @@ def delete_file_folder(src):
 
 
 class imgResource(Resource):
+    decorators = [auth.login_required]
 
     def post(self, id):
         f = request.files['file']

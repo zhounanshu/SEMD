@@ -5,9 +5,11 @@ from flask.ext.restful import Resource
 from flask.ext.restful import reqparse
 from ..models import *
 from ..lib.util import *
+from ..login.views import auth
 
 
 class devResource(Resource):
+    decorators = [auth.login_required]
 
     def get(self):
         user_id = request.args['user_id']

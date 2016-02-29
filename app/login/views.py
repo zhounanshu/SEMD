@@ -15,9 +15,12 @@ auth = HTTPBasicAuth()
 
 
 class userView(Resource):
+    decorators = [auth.login_required]
 
     def get(self, id):
         user = User.query.filter_by(id=id).first()
+        if user is None:
+            return {'status': 'fail', "mesg": "该用户不存在!"}
         userInfor = {}
         userInfor['username'] = user.username
         userInfor['email'] = user.email
@@ -26,8 +29,6 @@ class userView(Resource):
         userInfor['name'] = user.name
         userInfor['district'] = user.district
         userInfor['sex'] = user.sex
-        if user is None:
-            return {'status': 'fail', "mesg": "该用户不存在!"}
         return {'status': 'success', "data": userInfor}, 200
 
     def delete(self, id):
@@ -35,9 +36,12 @@ class userView(Resource):
 
 
 class perInfor(Resource):
+    decorators = [auth.login_required]
 
     def get(self, id):
         user = User.query.filter_by(id=id).first()
+        if user is not None:
+            return {'status': 'fail', "mesg": "该用户不存在!"}
         userInfor = {}
         userInfor['username'] = user.username
         userInfor['birthday'] = user.birthday
@@ -54,8 +58,6 @@ class perInfor(Resource):
             userInfor['province'] = '未设定'
         userInfor['id'] = str(user.id)
         userInfor['img'] = URI + str(id)
-        if user is None:
-            return {'status': 'fail', "mesg": "该用户不存在!"}
         return {'status': 'success', "data": userInfor}, 200
 
     def delete(self, id):
@@ -90,6 +92,7 @@ class user(Resource):
         except:
             return {'status': 'fail', 'mesg': '用户注册失败!'}
 
+    @auth.login_required
     def put(self):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=str)
@@ -120,7 +123,7 @@ class user(Resource):
 
 
 class verify_login(Resource):
-
+    @auth.login_required
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('username', type=str)
@@ -145,11 +148,12 @@ def get_auth_token():
     return jsonify({'token': token.decode('ascii')})
 
 
-# @Login.route('/v1/login', methods=['GET'])
-# @auth.login_required
-# def login():
-#     token = g.user.generate_auth_token()
-#     return jsonify({'token': token.decode('ascii'), 'status': 'ok'})
+@Login.route('/v1/login/try', methods=['GET'])
+@auth.login_required
+def login():
+    token = g.user.generate_auth_token()
+    return jsonify({'token': token.decode('ascii'),
+                    'status': 'ok', 'user_id': g.user.id})
 
 
 @auth.verify_password

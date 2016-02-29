@@ -4,9 +4,12 @@ from flask.ext.restful import Resource
 from flask.ext.restful import reqparse
 from flask_mail import Message
 from .. import mail
+from ..login.views import auth
 
 
 class sendMail(Resource):
+    decorators = [auth.login_required]
+
     def post(self):
         paser = reqparse.RequestParser()
         paser.add_argument('phone', type=str)

@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 from flask.ext.restful import Resource
 from flask.ext.restful import reqparse
-from flask import request
 from ..models import *
 from ..lib.util import *
+from ..login.views import auth
 
 
 class viewSet(Resource):
+    decorators = [auth.login_required]
 
     def put(self):
         parser = reqparse.RequestParser()
@@ -45,6 +46,8 @@ class viewSet(Resource):
 
 
 class feed(Resource):
+    decorators = [auth.login_required]
+
     def get(self):
         record = feedBack.query.filter_by(
             handle=0).order_by(feedBack.post_time).limit(500)
