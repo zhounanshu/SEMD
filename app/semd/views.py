@@ -133,7 +133,7 @@ class reltiPerson(Resource):
         result['humidity'] = record.humidity
         result['pressure'] = record.pressure
         result['uvIndex'] = str(
-            float(record.uvIndex) / 1000 * 1200 / 365)
+            float(record.uvIndex) / 1000 * 1200 / 365)[:3]
         result['datatime'] = record.datatime
         return {'status': 'success', "data": result}
 
