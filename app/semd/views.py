@@ -199,9 +199,9 @@ class env_history(Resource):
                 buf_value = ''
                 dataTi = result.datatime
                 timeUnif = dataTi[:14] + "00:00"
-                counts = (strTotsp(dataTi) - strTotsp(timeUnif)) / 300
+                counts = (strTotsp(dataTi) - strTotsp(timeUnif)) / 600
                 formatT = datetime.datetime.strptime(
-                    timeUnif, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=5 * counts)
+                    timeUnif, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=10 * counts)
                 if abs(strTotsp(dataTi) - strTotsp(formatT.strftime('%Y-%m-%d %H:%M:%S'))) < 120:
                     buf_value = result.temperature
                     buf_time = formatT.strftime('%Y-%m-%d %H:%M:%S')
@@ -231,9 +231,9 @@ class env_history(Resource):
                 buf_value = ''
                 dataTi = result.datatime
                 timeUnif = dataTi[:14] + "00:00"
-                counts = (strTotsp(dataTi) - strTotsp(timeUnif)) / 300
+                counts = (strTotsp(dataTi) - strTotsp(timeUnif)) / 600
                 formatT = datetime.datetime.strptime(
-                    timeUnif, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=5 * counts)
+                    timeUnif, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=10 * counts)
                 if abs(strTotsp(dataTi) - strTotsp(formatT.strftime('%Y-%m-%d %H:%M:%S'))) < 120:
                     buf_value = result.humidity
                     buf_time = formatT.strftime('%Y-%m-%d %H:%M:%S')
@@ -263,9 +263,9 @@ class env_history(Resource):
                 buf_value = ''
                 dataTi = result.datatime
                 timeUnif = dataTi[:14] + "00:00"
-                counts = (strTotsp(dataTi) - strTotsp(timeUnif)) / 1200
+                counts = (strTotsp(dataTi) - strTotsp(timeUnif)) / 600
                 formatT = datetime.datetime.strptime(
-                    timeUnif, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=20 * counts)
+                    timeUnif, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=10 * counts)
                 if abs(strTotsp(dataTi) - strTotsp(formatT.strftime('%Y-%m-%d %H:%M:%S'))) < 120:
                     buf_value = result.uvIndex
                     buf_time = formatT.strftime('%Y-%m-%d %H:%M:%S')
@@ -275,6 +275,6 @@ class env_history(Resource):
             for i in noDupes:
                 t_buf = {}
                 t_buf['time'] = i
-                t_buf['uv'] = values[timeL.index(i)]
+                t_buf['uv'] = str(round(float(values[timeL.index(i)]) /1000 * 1200 / 365, 1))
                 uv_list.append(t_buf)
             return {'status': 'success', "data": uv_list}
