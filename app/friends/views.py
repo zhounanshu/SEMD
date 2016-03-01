@@ -75,7 +75,7 @@ class friend(Resource):
 
 
 class searchFriend(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def get(self):
         name = request.args['username']

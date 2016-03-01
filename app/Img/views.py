@@ -39,7 +39,7 @@ def delete_file_folder(src):
 
 
 class imgResource(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def post(self, id):
         f = request.files['file']
