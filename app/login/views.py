@@ -209,10 +209,6 @@ class megVerif(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('username', type=str)
         args = parser.parse_args(strict=True)
-        user = User.query.filter_by(username=args['username']).first()
-        if user is not None:
-            return {'status': 'fail', "mesg": "用户名已被注册!"}, 200
-        # 修改为您要发送的手机号码，多个号码用逗号隔开
         mobile = urllib.quote(args['username'])
         # 修改为您要发送的短信内容
         verCode = generate_verification_code()
