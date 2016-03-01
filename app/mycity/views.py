@@ -99,7 +99,7 @@ def distance(lat1, lng1, lat2, lng2):
 
 
 class reltiPeople(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def get(self):
 

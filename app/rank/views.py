@@ -9,7 +9,7 @@ from ..login.views import auth
 
 
 class countRank(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def get(self):
         user_id = request.args['user_id']
@@ -49,7 +49,7 @@ class countRank(Resource):
 
 
 class get_bonus(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def get(self):
         user_id = request.args['user_id']

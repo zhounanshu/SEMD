@@ -8,7 +8,7 @@ from ..login.views import auth
 
 
 class viewSet(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def put(self):
         parser = reqparse.RequestParser()
@@ -46,7 +46,7 @@ class viewSet(Resource):
 
 
 class feed(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def get(self):
         record = feedBack.query.filter_by(

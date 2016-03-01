@@ -15,7 +15,7 @@ auth = HTTPBasicAuth()
 
 
 class userView(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def get(self, id):
         user = User.query.filter_by(id=id).first()
@@ -40,7 +40,7 @@ class perInfor(Resource):
 
     def get(self, id):
         user = User.query.filter_by(id=id).first()
-        if user is not None:
+        if user is None:
             return {'status': 'fail', "mesg": "该用户不存在!"}
         userInfor = {}
         userInfor['username'] = user.username
@@ -92,7 +92,7 @@ class user(Resource):
         except:
             return {'status': 'fail', 'mesg': '用户注册失败!'}
 
-    @auth.login_required
+    # @auth.login_required
     def put(self):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=str)
@@ -123,7 +123,7 @@ class user(Resource):
 
 
 class verify_login(Resource):
-    @auth.login_required
+
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('username', type=str)
