@@ -173,11 +173,11 @@ class env_history(Resource):
         base_time = record.datatime
         start_time = base_time[:11] + "00:00:00"
         # 获取显示总点数, 每隔5分钟一个点
-        ponits = (strTotsp(base_time) - strTotsp(start_time)) / 300
+        ponits = (strTotsp(base_time) - strTotsp(start_time)) / 600
         timePts = []
         for i in range(ponits + 1):
             Pt = datetime.datetime.strptime(
-                start_time, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=5 * i)
+                start_time, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=10 * i)
             timePts.append(Pt.strftime('%Y-%m-%d %H:%M:%S'))
         results = devData.query.filter(
             devData.datatime >= start_time,
