@@ -127,6 +127,8 @@ class searchFrid(Resource):
             return {'status': 'success', 'data': result}, 200
         else:
             for user in users:
+                if str(user.id) == str(id):
+                    continue
                 buf = {}
                 buf['name'] = user.name
                 buf['img'] = URI + str(user.id)
@@ -158,7 +160,7 @@ class searchFrid(Resource):
 
 
 class usrApply(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def post(self):
         paser = reqparse.RequestParser()
@@ -169,6 +171,10 @@ class usrApply(Resource):
         record = application.query.filter(
             application.user_id == args['id'],
             application.friend_id == args['friend_id']).first()
+        a = friends.query.filter_by(user_id=args['id']).first()
+        b = friends.query.filter_by(user_id=args['friend_id']).first()
+        if a or b:
+            return {'status': 'success', 'mesg': 'fial'}, 200
         if record is None:
             record = application(
                 args['friend_id'], args['id'], args['text'], '0', '1')
