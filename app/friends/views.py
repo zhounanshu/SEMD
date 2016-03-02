@@ -74,6 +74,29 @@ class friend(Resource):
         pass
 
 
+class friendInfor(Resource):
+    # decorators = [auth.login_required]
+
+    def get(self):
+        user_id = request.args['user_id']
+        friend = friends.query.filter_by(user_id=user_id).all()
+        if len(friend) == 0:
+            return {'friends': []}, 200
+        names = []
+        for person in friend:
+            friend_infor = {}
+            friend_infor['id'] = person.friend_id
+            friend_infor['img'] = URI + str(person.friend_id)
+            friend_infor['name'] = User.query.filter_by(
+                id=person.friend_id).first().name
+            friend_infor['province'] = User.query.filter_by(
+                id=person.friend_id).first().province
+            names.append(friend_infor)
+        temp = {}
+        temp['friends'] = names
+        return {'status': 'success', 'data': temp}
+
+
 class searchFriend(Resource):
     # decorators = [auth.login_required]
 

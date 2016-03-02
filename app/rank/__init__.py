@@ -9,3 +9,4 @@ ranks_api = Api(Ranks)
 from .views import *
 ranks_api.add_resource(countRank, '/v1/rank')
 ranks_api.add_resource(get_bonus, '/v1/bouns')
+ranks_api.add_resource(Rank, '/v1/get/rank')
