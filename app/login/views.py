@@ -210,6 +210,9 @@ class megVerif(Resource):
         parser.add_argument('username', type=str)
         args = parser.parse_args(strict=True)
         mobile = urllib.quote(args['username'])
+        exit = User.query.filter_by(username=args['username']).first()
+        if exit is not None:
+            return {'status': 'fail', "mesg": "手机号已被注册"}, 200
         # 修改为您要发送的短信内容
         verCode = generate_verification_code()
         record = verTab.query.filter_by(username=args['username']).first()
@@ -237,9 +240,6 @@ class signUp(Resource):
         parser.add_argument('password', type=str)
         parser.add_argument('verCode', type=str)
         args = parser.parse_args(strict=True)
-        exit = User.query.filter_by(username=args['username']).first()
-        if exit is not None:
-            return {'status': 'fail', "mesg": "手机号已被注册"}, 200
         code = verTab.query.filter_by(username=args['username']).first()
         if code.verCode != args['verCode']:
             return {'status': 'fail', "mesg": "验证码错误"}, 200
