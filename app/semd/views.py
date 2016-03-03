@@ -357,15 +357,14 @@ class envHist(Resource):
                 end_time, "%Y-%m-%d %H:%M:%S") - datetime.timedelta(hours=i)
             timeL.append(str(timeArr))
         result = []
+        end_point = {}
         if base_time != end_time:
             end_point[item] = record[item]
             end_point['time'] = record['datatime']
         else:
             end_point[item] = (result[-1][item] + result[-2][item]) / 2
             end_point['time'] = base_time[:11] + "00:10:00"
-
         for t in timeL:
             result.append(senHour(id, t, item))
-        end_point = {}
         result.append(end_point)
         return {'status': 'success', "data": result}
