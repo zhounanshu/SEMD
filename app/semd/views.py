@@ -364,7 +364,7 @@ class envHist(Resource):
         else:
             end_point[item] = (result[-1][item] + result[-2][item]) / 2
             end_point['time'] = base_time[:11] + "00:10:00"
+        result.append(end_point)
         for t in timeL:
             result.append(senHour(id, t, item))
-        result.append(end_point)
         return {'status': 'success', "data": result}
