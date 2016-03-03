@@ -275,6 +275,96 @@ class env_history(Resource):
             for i in noDupes:
                 t_buf = {}
                 t_buf['time'] = i
-                t_buf['uv'] = str(round(float(values[timeL.index(i)]) /1000 * 1200 / 365, 1))
+                t_buf['uv'] = str(
+                    round(float(values[timeL.index(i)]) / 1000 * 1200 / 365, 1))
                 uv_list.append(t_buf)
             return {'status': 'success', "data": uv_list}
+
+
+def valueNear(vals, mins, item):
+    result = []
+    timeL = []
+    values = []
+    records = to_json_list(vals)
+    for record in records:
+        t_buf = {}
+        buf_value = ''
+        dataTi = record['datatime']
+        timeUnif = dataTi[:14] + "00:00"
+        formatT = datetime.datetime.strptime(
+            timeUnif, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(minutes=mins * counts)
+        if abs(strTotsp(dataTi) - strTotsp(formatT.strftime('%Y-%m-%d %H:%M:%S'))) < (60 * mins):
+            buf_value = record(item)
+            buf_time = formatT.strftime('%Y-%m-%d %H:%M:%S')
+            timeL.append(buf_time)
+            values.append(buf_value)
+        noDupes = f4(timeL)
+        for i in noDupes:
+            t_buf = {}
+            t_buf['time'] = i
+            t_buf[item] = values[timeL.index(i)]
+            result.append(t_buf)
+    return result
+
+
+def senHour(id, tAxis, item):
+    result = {}
+    tArr = datetime.datetime.strptime(
+        tAxis, "%Y-%m-%d %H:%M:%S")
+    start_time = str(tArr - datetime.timedelta(minutes=10))
+    end_time = str(tArr + datetime.timedelta(minutes=10))
+    records = devData.query.filter(
+        devData.user_id == id,
+        devData.datatime >= start_time,
+        devData.datatime <= end_time).all()
+    records = to_json_list(records)
+    if len(records) == 0:
+        result[item] = ''
+        result['time'] = tAxis
+        return result
+    steps = []
+    for record in records:
+        datatime = record['datatime']
+        step = abs(strTotsp(datatime) - strTotsp(tAxis))
+        steps.append(step)
+    minStep = steps[0]
+    for i in xrange(1, len(steps)-1):
+        if minStep > steps[i]:
+            minStep = steps[i]
+    result[item] = records[steps.index(minStep)][item]
+    result['time'] = tAxis
+    return result
+
+
+class envHist(Resource):
+    def get(self):
+        id = request.args['user_id']
+        item = request.args['item'].encode('utf8')
+        items = set(['tempe', 'humi', 'uvIndex'])
+        if item not in items:
+            return {'status': 'fail', 'mesg': 'url参数错误!'}, 200
+        record = devData.query.filter_by(
+            user_id=id).order_by('datatime desc').first()
+        if record is None:
+            return {'status': 'fail', 'mesg': '你还未使用设备!'}, 200
+        record = to_json(record)
+        base_time = record['datatime']
+        end_time = base_time[:11] + "00:00:00"
+        timeL = []
+        timeL.append(end_time)
+        for i in xrange(25):
+            timeArr = datetime.datetime.strptime(
+                end_time, "%Y-%m-%d %H:%M:%S") - datetime.timedelta(hours=i)
+            timeL.append(str(timeArr))
+        result = []
+        for t in timeL:
+            result.append(senHour(id, t, item))
+        end_point = {}
+        if base_time != end_time:
+            end_point[item] = record[item]
+            end_point['time'] = record['datatime']
+        else:
+            end_point[item] = (result[-1][item] + result[-2][item]) / 2
+            end_point['time'] = base_time[:11] + "00:10:00"
+        result.append(end_point)
+        return {'status': 'success', "data": result}

@@ -7,6 +7,7 @@ import os
 import time
 import tempfile
 import re
+import datetime
 
 reload(sys)
 # sys.setdefaultencoding("utf-8")
@@ -77,11 +78,20 @@ print L
 buf = {}
 buf['test'] = 5
 L.append(buf)
-def f4(seq):
-    # order preserving
-    noDupes = []
-    [noDupes.append(i) for i in seq if not noDupes.count(i)]
-    return noDupes
-print f4(L)
-l = [1 ,2 ,3 ,3, 4 , 5,]
-print l.index(3)
+# def f4(seq):
+# order preserving
+#     noDupes = []
+#     [noDupes.append(i) for i in seq if not noDupes.count(i)]
+#     return noDupes
+# print f4(L)
+# l = [1 ,2 ,3 ,3, 4 , 5,]
+# print l.index(3)
+def strTotsp(arg):
+    return int(time.mktime(time.strptime(arg, '%Y-%m-%d %H:%M:%S')))
+base_time = "2016-03-03 12:43:15"
+a = datetime.datetime.strptime(
+    base_time, "%Y-%m-%d %H:%M:%S")
+d2 = a - datetime.timedelta(days=1)
+print strTotsp(str(d2))
+List = [1, 4, 5, 6, 5, 7]
+print List.index(5)
