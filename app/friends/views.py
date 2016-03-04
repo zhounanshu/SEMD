@@ -87,6 +87,8 @@ class friendInfor(Resource):
             friend_infor = {}
             friend_infor['id'] = person.friend_id
             friend_infor['img'] = URI + str(person.friend_id)
+            friend_infor['username'] = User.query.filter_by(
+                id=person.friend_id).first().username
             friend_infor['name'] = User.query.filter_by(
                 id=person.friend_id).first().name
             friend_infor['province'] = User.query.filter_by(
