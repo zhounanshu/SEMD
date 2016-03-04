@@ -259,3 +259,28 @@ class approv(Resource):
             db.session.delete(record)
             db.session.commit()
             return {'status': 'success', 'mesg': '拒绝申请!'}, 200
+
+
+class delFriend(Resource):
+    def delete(self):
+        paser = reqparse.RequestParser()
+        paser.add_argument('id', type=str)
+        paser.add_argument('friend_id', type=str)
+        args = paser.parse_args(strict=True)
+        friendShip = friends.query.filter(
+            friends.user_id == args['id'],
+            friends.friend_id == args['friend_id']).first()
+        try:
+            db.session.delete(friendShip)
+            db.session.commit()
+        except:
+            return {'status': 'fail', 'mesg': '删除好友失败!'}
+        friendShip = friends.query.filter(
+            friends.user_id == args['friend_id'],
+            friends.friend_id == args['id']).first()
+        try:
+            db.session.delete(friendShip)
+            db.session.commit()
+            return {'status': 'success', 'mesg': '删除好友成功!'}
+        except:
+            return {'status': 'fail', 'mesg': '删除好友失败!'}
