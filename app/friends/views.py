@@ -288,17 +288,20 @@ class delFriend(Resource):
         record = application.query.filter(
             application.user_id == int(args['friend_id']),
             application.friend_id == int(args['id'])).first()
-        try:
-            db.session.delete(record)
-            db.session.commit()
-        except:
-            return {'status': 'fail', 'mesg': '删除好友失败!', 'order': '3'}
-        record = application.query.filter(
-            application.user_id == args['id'],
-            application.friend_id == args['friend_id']).first()
-        try:
-            db.session.delete(record)
-            db.session.commit()
-            return {'status': 'success', 'mesg': '删除好友成功!'}
-        except:
-            return {'status': 'fail', 'mesg': '删除好友失败!', 'order': '4'}
+        if record is not None:
+            try:
+                db.session.delete(record)
+                db.session.commit()
+                return {'status': 'success', 'mesg': '删除好友成功!'}
+            except:
+                return {'status': 'fail', 'mesg': '删除好友失败!', 'order': '3'}
+        else:
+            record = application.query.filter(
+                application.user_id == args['id'],
+                application.friend_id == args['friend_id']).first()
+            try:
+                db.session.delete(record)
+                db.session.commit()
+                return {'status': 'success', 'mesg': '删除好友成功!'}
+            except:
+                return {'status': 'fail', 'mesg': '删除好友失败!', 'order': '4'}
