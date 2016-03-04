@@ -117,7 +117,7 @@ class searchFriend(Resource):
 
 
 class searchFrid(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def get(self):
         name = request.args['username']
@@ -173,10 +173,11 @@ class usrApply(Resource):
         record = application.query.filter(
             application.user_id == args['id'],
             application.friend_id == args['friend_id']).first()
-        a = friends.query.filter_by(user_id=args['id']).first()
-        b = friends.query.filter_by(user_id=args['friend_id']).first()
-        if a or b:
-            return {'status': 'success', 'mesg': 'fial'}, 200
+        a = friends.query.filter(
+            friends.user_id == args['id'],
+            friends.friend_id == args['friend_id']).first()
+        if a:
+            return {'status': 'fial', 'mesg': '已经是好友'}, 200
         if record is None:
             record = application(
                 args['friend_id'], args['id'], args['text'], '0', '1')
@@ -229,7 +230,7 @@ class usrApply(Resource):
 
 
 class approv(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def post(self):
         paser = reqparse.RequestParser()
