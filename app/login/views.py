@@ -256,6 +256,32 @@ class signUp(Resource):
 
 
 class chPasswd(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('username', type=str)
+        args = parser.parse_args(strict=True)
+        mobile = urllib.quote(args['username'])
+        exit = User.query.filter_by(username=args['username']).first()
+        if exit is None:
+            return {'status': 'fail', "mesg": "手机号输入错误"}, 200
+        # 修改为您要发送的短信内容
+        verCode = generate_verification_code()
+        record = verTab.query.filter_by(username=args['username']).first()
+        if record is None:
+            record = verTab(args['username'], verCode)
+        else:
+            record.verCode = verCode
+        try:
+            db.session.add(record)
+            db.session.commit()
+        except:
+            return {'status': 'fail', 'mesg': '验证码发送失败'}, 200
+        text = '您的验证码是' + verCode + '【云片网】'
+        # 调用智能匹配模版接口发短信
+        with open('log.txt', 'a+') as f:
+            f.write(send_sms(apikey, text, mobile) + '\n')
+        return {'status': 'success', 'mesg': '验证码已经发送'}, 200
+
     def put(self):
         parser = reqparse.RequestParser()
         parser.add_argument('username')
