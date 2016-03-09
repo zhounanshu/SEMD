@@ -27,3 +27,4 @@ weather_api.add_resource(wea_Station, '/v1/weather/station/upload')
 weather_api.add_resource(weatherLocation, '/v1/weather/location/realtime')
 # 获取区县天气信息
 weather_api.add_resource(get_disAla, '/v1/weather/area/alarm')
+

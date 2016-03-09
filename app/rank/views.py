@@ -6,7 +6,6 @@ from sqlalchemy import func
 from flask import request
 from ..lib.util import *
 from ..login.views import auth
-from .. import URI
 
 
 class countRank(Resource):
@@ -75,7 +74,11 @@ class Rank(Resource):
             temp = {}
             record = User.query.filter_by(id=id).first()
             temp['user_id'] = id
-            temp['img'] = URI + str(id)
+            rerd = picStr.query.filter_by(
+                user_id=str(id)).first()
+            if rerd is None:
+                return {'status': 'fail', 'mesg': '头像已经迁移'}, 200
+            temp['img'] = rerd.img
             temp['name'] = record.name
             temp['province'] = record.province
             temp['count'] = devData.query.filter_by(user_id=id).count()

@@ -5,7 +5,6 @@ from flask.ext.restful import reqparse
 from flask import request
 from ..models import *
 from ..lib.util import *
-from .. import URI
 from ..login.views import auth
 
 
@@ -86,7 +85,11 @@ class friendInfor(Resource):
         for person in friend:
             friend_infor = {}
             friend_infor['id'] = person.friend_id
-            friend_infor['img'] = URI + str(person.friend_id)
+            record = picStr.query.filter_by(
+                user_id=str(person.friend_id)).first()
+            if record is None:
+                return {'status': 'fail', 'mesg': '头像已经迁移'}, 200
+            friend_infor['img'] = record.img
             friend_infor['username'] = User.query.filter_by(
                 id=person.friend_id).first().username
             friend_infor['name'] = User.query.filter_by(
@@ -133,7 +136,11 @@ class searchFrid(Resource):
                     continue
                 buf = {}
                 buf['name'] = user.name
-                buf['img'] = URI + str(user.id)
+                record = picStr.query.filter_by(
+                    user_id=str(user.id)).first()
+                if record is None:
+                    return {'status': 'fail', 'mesg': '头像已经迁移'}, 200
+                buf['img'] = record.img
                 buf['area'] = user.province + user.district
                 buf['friend_id'] = str(user.id)
                 beFri = friends.query.filter(
@@ -201,7 +208,11 @@ class usrApply(Resource):
         for applicant in applicants:
             record = User.query.filter_by(id=applicant.user_id).first()
             buf = {}
-            buf['img'] = URI + str(record.id)
+            rerd = picStr.query.filter_by(
+                user_id=str(record.id)).first()
+            if rerd is None:
+                return {'status': 'fail', 'mesg': '头像已经迁移'}, 200
+            buf['img'] = rerd.img
             buf['area'] = record.province + record.district
             buf['name'] = record.name
             buf['text'] = applicant.text
