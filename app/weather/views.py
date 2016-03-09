@@ -676,6 +676,6 @@ class hasAlarm(Resource):
             response = json.loads(response)['data']
             if len(response) != 0:
                 result.append(area)
-        return {'status': 'success', 'data': result}, 200
+        return {'status': 'success', 'areas': result}, 200
 
 
