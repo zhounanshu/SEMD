@@ -342,6 +342,7 @@ class imgRes(Resource):
         parser.add_argument('user_id', type=str)
         parser.add_argument('img', type=str)
         args = parser.parse_args(strict=True)
+        return {'result': args['img']}
         record = picStr(args['user_id'], args['img'])
         try:
             db.session.add(record)

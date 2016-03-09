@@ -661,3 +661,21 @@ class get_disAla(Resource):
                 elem['img_name'] = None
                 result.append(elem)
         return {'status': 'success', "data": result, 'mesg': response['msg']}
+
+
+class hasAlarm(Resource):
+    def get(self):
+        areas = ['青浦', '松江', '金山', '闵行', '市区', '宝山', '嘉定', '浦东', '奉贤', '崇明']
+        header = {"Accept": " application/json",
+                  "Content-Type": " application/json"}
+        result = []
+        for area in areas:
+            url = district_url + area
+            req = urllib2.Request(url, headers=header)
+            response = urllib2.urlopen(req).read()
+            response = json.loads(response)['data']
+            if len(response) != 0:
+                result.append(area)
+        return {'status': 'success', 'data': result}, 200
+
+
