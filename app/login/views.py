@@ -249,6 +249,10 @@ class signUp(Resource):
             db.session.add(record)
             db.session.commit()
             user_id = record.id
+            img = ''
+            inti_img = picStr(str(record.id), img)
+            db.session.add(inti_img)
+            db.session.commit()
             return {'status': 'success', "mesg": "用户注册成功!",
                     "data": {"userId": user_id}}, 200
         except:
@@ -304,3 +308,28 @@ class chPasswd(Resource):
                     "data": {"userId": user_id}}, 200
         except:
             return {'status': 'fail', 'mesg': '密码修改失败'}, 200
+
+
+class imgRes(Resource):
+    def get(self):
+        user_id = request.args['user_id']
+        record = picStr.query.filter_by(user_id=user_id)
+        if record is None:
+            return {'status': 'fail', 'mesg': "账号错误"}, 200
+        return {'status': 'success', 'img': record.img}, 200
+
+    def put(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('user_id', type=str)
+        parser.add_argument('img', type=str)
+        args = parser.parse_args(strict=True)
+        record = picStr.query.filter_by(user_id=args['user_id'])
+        if record is None:
+            return {'status': 'fail', 'mesg': "账号错误"}, 200
+        record.img = args['img']
+        try:
+            db.session.add(record)
+            db.session.commit()
+            return {'status': 'success', 'mesg': '头像更新成功'}
+        except:
+            return {'status': 'fail', 'mesg': '头像更新失败'}
