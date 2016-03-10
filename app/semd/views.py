@@ -340,7 +340,7 @@ class envHist(Resource):
     def get(self):
         id = request.args['user_id']
         item = request.args['item'].encode('utf8')
-        items = set(['temperature', 'humidity', 'uvIndex'])
+        items = set(['temperature', 'humidity', 'uvIndex', 'pressure'])
         if item not in items:
             return {'status': 'fail', 'mesg': 'url参数错误!'}, 200
         record = devData.query.filter_by(
