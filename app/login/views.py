@@ -326,7 +326,7 @@ class imgRes(Resource):
         parser.add_argument('user_id', type=str)
         parser.add_argument('img', type=str)
         args = parser.parse_args(strict=True)
-        record = picStr.query.filter_by(user_id=args['user_id'])
+        record = picStr.query.filter_by(user_id=args['user_id']).first()
         if record is None:
             return {'status': 'fail', 'mesg': "账号错误"}, 200
         record.img = args['img']
