@@ -77,7 +77,7 @@ class Rank(Resource):
             rerd = picStr.query.filter_by(
                 user_id=str(id)).first()
             if rerd is None:
-                return {'status': 'fail', 'mesg': '头像已经迁移'}, 200
+                continue
             temp['img'] = rerd.img
             temp['name'] = record.name
             temp['province'] = record.province
