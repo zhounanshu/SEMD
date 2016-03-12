@@ -139,7 +139,7 @@ class searchFrid(Resource):
                 record = picStr.query.filter_by(
                     user_id=str(user.id)).first()
                 if record is None:
-                    return {'status': 'fail', 'mesg': '头像已经迁移'}, 200
+                    continue
                 buf['img'] = record.img
                 buf['area'] = user.province + user.district
                 buf['friend_id'] = str(user.id)
