@@ -88,7 +88,7 @@ class friendInfor(Resource):
             record = picStr.query.filter_by(
                 user_id=str(person.friend_id)).first()
             if record is None:
-                return {'status': 'fail', 'mesg': '头像已经迁移'}, 200
+                continue
             friend_infor['img'] = record.img
             friend_infor['username'] = User.query.filter_by(
                 id=person.friend_id).first().username
