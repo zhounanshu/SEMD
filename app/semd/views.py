@@ -349,9 +349,10 @@ class envHist(Resource):
             return {'status': 'fail', 'mesg': '你还未使用设备!'}, 200
         record = to_json(record)
         base_time = record['datatime']
-        end_time = base_time[:11] + "00:00:00"
+        end_time = base_time[:14] + "00:00"
+        print end_time
         timeL = []
-        timeL.append(end_time)
+        # timeL.append(end_time)
         for i in xrange(25):
             timeArr = datetime.datetime.strptime(
                 end_time, "%Y-%m-%d %H:%M:%S") - datetime.timedelta(hours=i)
