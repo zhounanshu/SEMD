@@ -80,7 +80,7 @@ class friendInfor(Resource):
         user_id = request.args['user_id']
         friend = friends.query.filter_by(user_id=user_id).all()
         if len(friend) == 0:
-            return {'friends': []}, 200
+            return {'status': 'fail', 'data': {}}, 200
         names = []
         for person in friend:
             friend_infor = {}
