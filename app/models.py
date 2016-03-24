@@ -390,7 +390,7 @@ class crorrection(db.Model):
 class picStr(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(255), nullable=False)
-    img = db.Column(db.Text, nullable=False)
+    img = db.Column(db.UnicodeText, nullable=False)
 
     def __init__(self, user_id, img):
         self.user_id = user_id
