@@ -304,6 +304,7 @@ class chPasswd(Resource):
         if code.verCode != args['verCode']:
             return {'status': 'fail', "mesg": "验证码错误"}, 200
         try:
+            record.password = args['password']
             db.session.add(record)
             db.session.commit()
             user_id = record.id
