@@ -652,14 +652,15 @@ class get_disAla(Resource):
         response = json.loads(response)
         result = []
         for elem in response['data']:
-            if elem['level'] != "解除".decode('utf-8'):
-                level_code = alarm_levels.index(elem['level'].encdoe('utf-8'))
-                type_code = types[elem['type'].encode('utf-8')]
+            if elem['level'] != "解除".decode('utf8'):
+                print elem['level']
+                level_code = alarm_levels.index(elem['level'].encode('utf-8'))
+                type_code = types[elem['type'].encode('utf8')]
                 img_name = type_code + str(level_code)
-                elem['img_name'] = img_name
+                elem['img_name'] =  img_name
             else:
                 elem['img_name'] = None
-                result.append(elem)
+            result.append(elem)
         return {'status': 'success', "data": result, 'mesg': response['msg']}
 
 
