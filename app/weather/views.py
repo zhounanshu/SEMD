@@ -644,7 +644,8 @@ class get_disAla(Resource):
     def get(self):
         area = request.args['area']
         header = {"Accept": " application/json",
-                  "Content-Type": " application/json"}
+                  "Content-Type": " application/json",
+                  "User_Agent": "Mozilla/5.1"}
         # return {'area': area}
         url = district_url + area.encode('utf8')
         req = urllib2.Request(url, headers=header)
@@ -653,7 +654,6 @@ class get_disAla(Resource):
         result = []
         for elem in response['data']:
             if elem['level'] != "解除".decode('utf8'):
-                print elem['level']
                 level_code = alarm_levels.index(elem['level'].encode('utf-8'))
                 type_code = types[elem['type'].encode('utf8')]
                 img_name = type_code + str(level_code)
