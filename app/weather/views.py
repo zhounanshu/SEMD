@@ -646,7 +646,6 @@ class get_disAla(Resource):
         header = {"Accept": " application/json",
                   "Content-Type": " application/json",
                   "User-Agent": "Mozilla/5.1"}
-        # return {'area': area}
         url = district_url + area.encode('utf8')
         req = urllib2.Request(url, headers=header)
         response = urllib2.urlopen(req).read()
