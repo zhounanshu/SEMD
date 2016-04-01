@@ -656,8 +656,7 @@ class get_disAla(Resource):
                 level_code = alarm_levels.index(elem['level'].encode('utf-8'))
                 type_code = types[elem['type'].encode('utf8')]
                 img_name = type_code + str(level_code)
-                elem[
-                    'img_name'] = 'http://www.zns.link:8083/v1/alarm/img?img_name=' + img_name
+                elem['img_name'] = img_name
             else:
                 elem['img_name'] = None
             result.append(elem)
