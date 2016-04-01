@@ -104,7 +104,8 @@ class reltiPeople(Resource):
     def get(self):
 
         header = {"Accept": " application/json",
-                  "Content-Type": " application/json"}
+                  "Content-Type": " application/json",
+                  "User-Agent": "Mozilla/5.1"}
         req = urllib2.Request(station_url, headers=header)
         response = urllib2.urlopen(req).read()
         response = json.loads(response)['data']
