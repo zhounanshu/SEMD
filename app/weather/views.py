@@ -677,3 +677,19 @@ class hasAlarm(Resource):
             if len(response) != 0:
                 result.append(area)
         return {'status': 'success', 'areas': result}, 200
+
+
+class threeHour(Resource):
+    def get(self):
+        header = {"Accept": " application/json",
+                  "Content-Type": " application/json"}
+        req = urllib2.Request(three_hour, headers=header)
+        response = urllib2.urlopen(req).read()
+        response = json.loads(response)['data']['content']
+        result = response.split('\r\n')[2]
+        temp = re.findall(r"本市：(.*?)，", result.encode('utf8'))
+        print temp
+        weather = ''
+        if len(temp) != 0:
+            weather = temp[0]
+        return {'status': 'success', 'data': weather}, 200
