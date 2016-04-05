@@ -36,4 +36,6 @@ def create_app(cnf):
     app.register_blueprint(Ranks)
     from .mail import Advice
     app.register_blueprint(Advice)
+    from .statistics import statist_blueprint
+    app.register_blueprint(statist_blueprint)
     return app
