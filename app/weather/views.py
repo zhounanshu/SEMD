@@ -675,7 +675,10 @@ class hasAlarm(Resource):
             response = urllib2.urlopen(req).read()
             response = json.loads(response)['data']
             if len(response) != 0:
-                result.append(area)
+                for ele in response:
+                    if ele['level'] != u'解除':
+                        result.append(area)
+                        break
         return {'status': 'success', 'areas': result}, 200
 
 
