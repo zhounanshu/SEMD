@@ -157,6 +157,8 @@ class reltiPeople(Resource):
                             post_num += 1
                     except:
                         continue
+                if user['latitude'] == '' or user['longitude'] == '':
+                    continue
                 user['post_num'] = post_num
                 del user['id']
                 device_real.append(user)
