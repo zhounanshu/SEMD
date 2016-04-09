@@ -102,7 +102,6 @@ class reltiPeople(Resource):
     # decorators = [auth.login_required]
 
     def get(self):
-
         header = {"Accept": " application/json",
                   "Content-Type": " application/json",
                   "User-Agent": "Mozilla/5.1"}
@@ -129,13 +128,16 @@ class reltiPeople(Resource):
                     result.append(buf)
         if result is None:
             return {'status': 'fail', 'mesg': '自动站缺失数据!'}
-
         base_time = datetime.datetime.now()
-        forwd_time = base_time - datetime.timedelta(hours=168)
+        forwd_time = base_time - datetime.timedelta(hours=48)
         start_time = forwd_time.strftime('%Y-%m-%d %H:%M:%S')
         end_time = base_time.strftime('%Y-%m-%d %H:%M:%S')
+        print datetime.datetime.now()
+        print start_time
+        print end_time
         data_list = devData.query.filter(devData.datatime >= start_time,
                                          devData.datatime <= end_time).all()
+        print datetime.datetime.now()
         device_real = []
         if len(data_list) != 0:
             user_list = []
@@ -148,7 +150,6 @@ class reltiPeople(Resource):
                 rd = devData.query.filter_by(user_id=id).order_by(
                     devData.datatime.desc()).limit(1)[0]
                 buf = to_json(rd)
-                # del buf['user_id']
                 del buf['device_mac']
                 result1.append(buf)
             for user in result1:
@@ -163,7 +164,6 @@ class reltiPeople(Resource):
                 user['post_num'] = post_num
                 del user['id']
                 device_real.append(user)
-
         dev_data = {}
         dev_data['source'] = '1'
         dev_data['resource'] = device_real

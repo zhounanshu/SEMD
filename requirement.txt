@@ -10,3 +10,4 @@ uwsgi
 flask-cors
 Pillow
 Flask-Mail
+flask-mysqldb
