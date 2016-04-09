@@ -5,6 +5,7 @@ from flask.ext.restful import Resource
 from sqlalchemy import func
 from flask import request
 from ..lib.util import *
+import datetime
 from ..login.views import auth
 
 
@@ -55,6 +56,7 @@ class Rank(Resource):
         user_id = request.args['user_id']
         shows = devData.query.group_by(devData.user_id).order_by(
             func.count(devData.user_id).desc()).all()
+        print datetime.datetime.now()
         if len(shows) == 0:
             return {"mesge": "暂时无数据"}
         rank_container = []
@@ -104,3 +106,83 @@ class get_bonus(Resource):
         counts_user = usrData.query.filter_by(id=user_id).count()
         bonus = int((counts_dev ** 0.7 + counts_user ** 0.3) * 10)
         return {'status': 'success', 'data': bonus}
+
+
+class pageRank(Resource):
+    def get(self):
+        uid = request.args['user_id']
+        users = User.query.all()
+        user_ids = []
+        for user in users:
+            user_ids.append(user.id)
+        if len(user_ids) == 0:
+            return {'status': 'fail', 'mesg': '无用户注册!'}, 200
+        total = []
+        for user_id in user_ids:
+            records = devData.query.filter_by(
+                user_id=user_id).all()
+            temp = {}
+            if len(records) == 0:
+                continue
+            else:
+                temp['id'] = user_id
+                temp['counts'] = len(records)
+                total.append(temp)
+        result = self.quickSort(total, 0, len(total) - 1)
+        print result
+        rank = 0
+        count = 0
+        tenRank = []
+        if len(result) == 0:
+            return {{'status': 'fail', 'mesg': '用户没有上传数据!'}, 200}
+        else:
+            for i in xrange(len(result)):
+                if result[i]['id'] == uid:
+                    rank = i + 1
+                    count = result[i]['counts']
+                    break
+            if len(result) > 10:
+                tenRank = total[:11]
+            else:
+                tenRank = result
+        rankData = []
+        for i in range(len(tenRank)):
+            temp = {}
+            temp['user_rank'] = i + 1
+            temp['counts'] = tenRank[i]['counts']
+            record = User.query.filter_by(id=tenRank[i]['id']).first()
+            temp['user_id'] = record.id
+            temp['username'] = record.username
+            temp['province'] = record.province
+            temp['name'] = record.name
+            rerd = picStr.query.filter_by(
+                user_id=record.id).first()
+            if rerd is None:
+                continue
+            temp['img'] = rerd.img
+            rankData.append(temp)
+        user_infor = {}
+        user_infor['count'] = count
+        user_infor['user_rank'] = rank
+        data = {}
+        data['user_infor'] = user_infor
+        data['ten_rank'] = rankData
+        return {'status': 'success', 'data': data}, 200
+
+    def quickSort(self, arrDict, left, right):
+        if left >= right:
+            return arrDict
+        key = arrDict[left]
+        low = left
+        high = right
+        while left < right:
+            while left < right and arrDict[right]['counts'] <= key['counts']:
+                right -= 1
+            arrDict[left] = arrDict[right]
+            while left < right and arrDict[left]['counts'] > key['counts']:
+                left += 1
+            arrDict[right] = arrDict[left]
+        arrDict[left] = key
+        self.quickSort(arrDict, low, left - 1)
+        self.quickSort(arrDict, left + 1, high)
+        return arrDict
