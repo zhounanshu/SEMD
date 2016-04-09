@@ -154,11 +154,12 @@ class reltiPeople(Resource):
             for user in result1:
                 post_num = 0
                 for value in result1:
-                    # if value['latitude'] == '' or user['latitude'] == '':
-                    #     continue
-                    if distance(user['latitude'], user['longitude'],
-                                value['latitude'], value['longitude']) <= 1000:
-                        post_num += 1
+                    try:
+                        if distance(user['latitude'], user['longitude'],
+                                    value['latitude'], value['longitude']) <= 1000:
+                            post_num += 1
+                    except:
+                        continue
                 user['post_num'] = post_num
                 del user['id']
                 device_real.append(user)
