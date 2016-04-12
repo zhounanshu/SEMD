@@ -7,3 +7,4 @@ statist_api = Api(statist_blueprint)
 
 from .views import *
 statist_api.add_resource(totalData, '/v1/total/num')
+statist_api.add_resource(eachDay, '/v1/data/today')

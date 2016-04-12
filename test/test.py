@@ -86,12 +86,16 @@ L.append(buf)
 # print f4(L)
 # l = [1 ,2 ,3 ,3, 4 , 5,]
 # print l.index(3)
-def strTotsp(arg):
-    return int(time.mktime(time.strptime(arg, '%Y-%m-%d %H:%M:%S')))
-base_time = "2016-03-03 12:43:15"
-a = datetime.datetime.strptime(
-    base_time, "%Y-%m-%d %H:%M:%S")
-d2 = a - datetime.timedelta(days=1)
-print strTotsp(str(d2))
-List = [1, 4, 5, 6, 5, 7]
-print List.index(5)
+# def strTotsp(arg):
+#     return int(time.mktime(time.strptime(arg, '%Y-%m-%d %H:%M:%S')))
+# base_time = "2016-03-03 12:43:15"
+# a = datetime.datetime.strptime(
+#     base_time, "%Y-%m-%d %H:%M:%S")
+# d2 = a - datetime.timedelta(days=1)
+# print strTotsp(str(d2))
+# List = [1, 4, 5, 6, 5, 7]
+# print List.index(5)
+a = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+b = a[:11] + '00:00:00'
+print a
+print b
