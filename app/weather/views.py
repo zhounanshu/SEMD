@@ -464,6 +464,11 @@ class get_forecast(Resource):
             # n['tempe_l'] = n['tempe'].split('~')[0]
             # n['tempe_h'] = n['tempe'].split('~')[1][:-1]
             result.append(n)
+        for i in range(len(result)):
+            for key in result[i].keys():
+                if result[i][key] == None:
+                    result[i][key] = result[
+                        i - 1][key] if i > 0 else result[i + 1][key]
         return {'status': 'success', "data": response}
 
 
@@ -518,27 +523,30 @@ class get_rain(Resource):
                     str(rain_list[count]) + 'mm, 之后雨停'
                 return{'status': 'success', 'mesg': mesg}
 
-import random
-import math
+
+from math import *
 
 
-def rad(arg):
-    return float(arg) ** math.pi / 180
+def distance(Lat_A, Lng_A, Lat_B, Lng_B):
 
-
-def distance(lat1, lng1, lat2, lng2):
-    radlat1 = rad(lat1)
-    radlat2 = rad(lat2)
-    a = radlat1 - radlat2
-    b = rad(lng1) - rad(lng2)
-    s = 2 * math.asin(math.sqrt(math.pow(math.sin(a / 2), 2) +
-                                math.cos(radlat1) * math.cos(radlat2) * math.pow(math.sin(b / 2), 2)))
-    earth_radius = 6378.137 * 1000
-    s = s * earth_radius
-    if s < 0:
-        return -s
-    else:
-        return s
+    ra = 6378.140  # 赤道半径 (km)
+    rb = 6356.755  # 极半径 (km)
+    flatten = (ra - rb) / ra  # 地球扁率
+    if (Lat_A == Lat_B) and (Lng_A == Lng_B):
+        return 0
+    rad_lat_A = radians(Lat_A)
+    rad_lng_A = radians(Lng_A)
+    rad_lat_B = radians(Lat_B)
+    rad_lng_B = radians(Lng_B)
+    pA = atan(rb / ra * tan(rad_lat_A))
+    pB = atan(rb / ra * tan(rad_lat_B))
+    xx = acos(sin(pA) * sin(pB) + cos(pA) * cos(pB)
+              * cos(rad_lng_A - rad_lng_B))
+    c1 = (sin(xx) - xx) * (sin(pA) + sin(pB)) ** 2 / cos(xx / 2) ** 2
+    c2 = (sin(xx) + xx) * (sin(pA) - sin(pB)) ** 2 / sin(xx / 2) ** 2
+    dr = flatten / 8 * (c1 - c2)
+    distance = ra * (xx + dr)
+    return distance * 1000
 
 
 class get_qpf(Resource):

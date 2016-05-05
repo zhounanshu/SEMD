@@ -8,7 +8,7 @@ weather_api = Api(Weather)
 
 from .views import *
 # weather_api.add_resource(viewRelti, '/v1/weather/realtime')
-# weather_api.add_resource(viewForecast, '/v1/weather/forecast')
+# weather_api.add_resource(viewForecast, '/v1/wather/forecast')
 weather_api.add_resource(alarm, '/v1/weather/alarm')
 # weather_api.add_resource(rain, '/v1/weather/rain')
 weather_api.add_resource(get_realtime, '/v1/weather/realtime')

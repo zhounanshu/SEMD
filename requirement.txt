@@ -11,3 +11,4 @@ flask-cors
 Pillow
 Flask-Mail
 flask-mysqldb
+pymongo-3.2.2
