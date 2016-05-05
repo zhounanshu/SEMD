@@ -466,9 +466,14 @@ class get_forecast(Resource):
             result.append(n)
         for i in range(len(result)):
             for key in result[i].keys():
+                if key == 'tempe':
+                    if result[i][key].split('~')[0] == '':
+                        result[i][key] = result[
+                            i - 1][key] if i > 0 else result[i + 1][key]
                 if result[i][key] == None:
                     result[i][key] = result[
                         i - 1][key] if i > 0 else result[i + 1][key]
+                    result[i]['weather'] = '晴'
         return {'status': 'success', "data": response}
 
 
