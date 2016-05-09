@@ -567,7 +567,7 @@ class get_qpf(Resource):
                         雨量预测测试
         '''
         for value in records:
-            if distance('31.87', '121.33', value['lat'], value['lon']) < 100000:
+            if distance(float('31.87'), float('121.33'), float(value['lat']), float(value['lon'])) < 1000:
                 value['data'] = str(random.random())[:3]
         result = []
         for value in records:

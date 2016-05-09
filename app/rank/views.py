@@ -54,7 +54,6 @@ class Rank(Resource):
 
     def get(self):
         user_id = request.args['user_id']
-        print datetime.datetime.now()
         shows = devData.query.group_by(devData.user_id).order_by(
             func.count(devData.user_id).desc()).all()
         if len(shows) == 0:
@@ -94,7 +93,6 @@ class Rank(Resource):
         for i in range(len(ten_rank)):
             ten_rank[i]['user_rank'] = str(i + 1)
         result['ten_rank'] = ten_rank
-        print datetime.datetime.now()
         return {"status": "success", 'data': result}
 
 
@@ -130,7 +128,6 @@ class pageRank(Resource):
                 temp['counts'] = len(records)
                 total.append(temp)
         result = self.quickSort(total, 0, len(total) - 1)
-        print result
         rank = 0
         count = 0
         tenRank = []

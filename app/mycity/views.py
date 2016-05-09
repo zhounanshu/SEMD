@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from flask.ext.restful import Resource
 import datetime
-import math
+from math import *
 import urllib2
 import json
 from decimal import *
@@ -10,6 +10,7 @@ from ..weather.config import *
 from ..models import *
 from ..lib.util import *
 from ..login.views import auth
+import types
 
 
 def isValid(data):
@@ -27,6 +28,12 @@ def isData(data):
         return False
     else:
         return True
+
+
+def DataCheck(data):
+    if data != '':
+        return True
+    return False
 
 
 def wind_direct(wind_direction):
@@ -79,23 +86,26 @@ def wind_speed(wind_speed):
     return wind_order
 
 
-def rad(arg):
-    return float(arg) ** math.pi / 180
+def distance(Lat_A, Lng_A, Lat_B, Lng_B):
 
-
-def distance(lat1, lng1, lat2, lng2):
-    radlat1 = rad(lat1)
-    radlat2 = rad(lat2)
-    a = radlat1 - radlat2
-    b = rad(lng1) - rad(lng2)
-    s = 2 * math.asin(math.sqrt(math.pow(math.sin(a / 2), 2) +
-                                math.cos(radlat1) * math.cos(radlat2) * math.pow(math.sin(b / 2), 2)))
-    earth_radius = 6378.137 * 1000
-    s = s * earth_radius
-    if s < 0:
-        return -s
-    else:
-        return s
+    ra = 6378.140  # 赤道半径 (km)
+    rb = 6356.755  # 极半径 (km)
+    flatten = (ra - rb) / ra  # 地球扁率
+    if (Lat_A == Lat_B) and (Lng_A == Lng_B):
+        return 0
+    rad_lat_A = radians(Lat_A)
+    rad_lng_A = radians(Lng_A)
+    rad_lat_B = radians(Lat_B)
+    rad_lng_B = radians(Lng_B)
+    pA = atan(rb / ra * tan(rad_lat_A))
+    pB = atan(rb / ra * tan(rad_lat_B))
+    xx = acos(sin(pA) * sin(pB) + cos(pA) * cos(pB)
+              * cos(rad_lng_A - rad_lng_B))
+    c1 = (sin(xx) - xx) * (sin(pA) + sin(pB)) ** 2 / cos(xx / 2) ** 2
+    c2 = (sin(xx) + xx) * (sin(pA) - sin(pB)) ** 2 / sin(xx / 2) ** 2
+    dr = flatten / 8 * (c1 - c2)
+    distance = ra * (xx + dr)
+    return distance * 1000
 
 
 class reltiPeople(Resource):
@@ -129,11 +139,12 @@ class reltiPeople(Resource):
         if result is None:
             return {'status': 'fail', 'mesg': '自动站缺失数据!'}
         base_time = datetime.datetime.now()
-        forwd_time = base_time - datetime.timedelta(hours=48)
+        forwd_time = base_time - datetime.timedelta(hours=2)
         start_time = forwd_time.strftime('%Y-%m-%d %H:%M:%S')
         end_time = base_time.strftime('%Y-%m-%d %H:%M:%S')
         data_list = devData.query.filter(devData.datatime >= start_time,
                                          devData.datatime <= end_time).all()
+        end_time = datetime.datetime.now()
         device_real = []
         if len(data_list) != 0:
             user_list = []
@@ -152,8 +163,9 @@ class reltiPeople(Resource):
                 post_num = 0
                 for value in result1:
                     try:
-                        if distance(user['latitude'], user['longitude'],
-                                    value['latitude'], value['longitude']) <= 1000:
+                        if distance(float(user['latitude']),
+                                    float(user['longitude']), float(value['latitude']),
+                                    float(value['longitude'])) <= 1000:
                             post_num += 1
                     except:
                         continue
@@ -161,6 +173,12 @@ class reltiPeople(Resource):
                     continue
                 user['post_num'] = post_num
                 del user['id']
+                count = 0
+                for key in user.keys():
+                    if DataCheck(user[key]):
+                        count += 1
+                if count != 9:
+                    continue
                 device_real.append(user)
         dev_data = {}
         dev_data['source'] = '1'
