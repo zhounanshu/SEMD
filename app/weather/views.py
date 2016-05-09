@@ -474,12 +474,16 @@ class get_forecast(Resource):
                     result[i][key] = result[
                         i - 1][key] if i > 0 else result[i + 1][key]
                     result[i]['weather'] = '晴'
+        buf = result
         if len(result) < 10:
             extenData = result[-1]
             for i in range(10 - len(result)):
-                result.append(extenData)
+                datatime = datetime.datetime.strptime(extenData['datatime'],
+                                                      "%Y-%m-%d") + datetime.timedelta(days=1)
+                extenData['datatime'] = datatime.strftime("%Y-%m-%d")
+                buf.append(extenData)
         else:
-            result = result[:10]
+            buf = result[:10]
         return {'status': 'success', "data": result}
 
 
