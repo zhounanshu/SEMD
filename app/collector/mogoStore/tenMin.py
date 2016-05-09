@@ -19,10 +19,17 @@ results['acquire_time'] = acquire_time
 client = MongoClient('localhost', 27017)
 db = client['meteorShanghai']
 
-# insert autostaion data
+# insert 80autostaion data
 collection = db['autoStation']
 post_id = collection.insert_one(results).inserted_id
 
+# insert another station
+req = urllib2.Request(station , headers=header)
+response = urllib2.urlopen(req).read()
+results = json.loads(response)
+results['acquire_time'] = acquire_time
+collection = db['anotherStation']
+post_id = collection.insert_one(results).inserted_id
 # insert city alarm data
 req = urllib2.Request(cityAlarm_url , headers=header)
 response = urllib2.urlopen(req).read()

@@ -470,11 +470,17 @@ class get_forecast(Resource):
                     if result[i][key].split('~')[0] == '':
                         result[i][key] = result[
                             i - 1][key] if i > 0 else result[i + 1][key]
-                if result[i][key] == None:
+                if result[i][key] is None:
                     result[i][key] = result[
                         i - 1][key] if i > 0 else result[i + 1][key]
                     result[i]['weather'] = '晴'
-        return {'status': 'success', "data": response}
+        if len(result) < 10:
+            extenData = result[-1]
+            for i in range(10 - len(result)):
+                result.append(extenData)
+        else:
+            result = result[:10]
+        return {'status': 'success', "data": result}
 
 
 class get_rain(Resource):
