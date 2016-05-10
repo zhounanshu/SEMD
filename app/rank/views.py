@@ -54,46 +54,81 @@ class Rank(Resource):
 
     def get(self):
         user_id = request.args['user_id']
-        shows = devData.query.group_by(devData.user_id).order_by(
+        print datetime.datetime.now()
+        shows = devData.query.join(
+            User, User.id == devData.user_id).join(
+            picStr, picStr.user_id == devData.user_id).add_columns(
+            User.name, User.username,
+            User.province, func.count(devData.user_id)).group_by(
+            devData.user_id).order_by(
             func.count(devData.user_id).desc()).all()
+        print datetime.datetime.now()
         if len(shows) == 0:
             return {"mesge": "暂时无数据"}
-        rank_container = []
-        for show in shows:
-            rank_container.append(show.user_id)
-        if int(user_id) not in rank_container:
-            user_rank = devData.query.group_by(devData.user_id).count()
-        else:
-            user_rank = rank_container.index(int(user_id))
-        ten_rank = []
-        buf = []
-        if len(rank_container) < 10:
-            buf = rank_container
-        else:
-            buf = rank_container[: 10]
-        for id in buf:
-            temp = {}
-            record = User.query.filter_by(id=id).first()
-            temp['user_id'] = id
-            rerd = picStr.query.filter_by(
-                user_id=str(id)).first()
-            if rerd is None:
-                continue
-            temp['img'] = rerd.img
-            temp['name'] = record.name
-            temp['province'] = record.province
-            temp['count'] = devData.query.filter_by(user_id=id).count()
-            temp['username'] = record.username
-            ten_rank.append(temp)
         result = {}
+        rankBuf = []
+        user_rank = ''
+        for ele in shows:
+            temp = {}
+            temp['user_id'] = ele[0].user_id
+            temp['img'] = picStr.query.filter_by(
+                user_id=temp['user_id']).first().img
+            temp['name'] = ele[1]
+            temp['province'] = ele[3]
+            temp['username'] = ele[2]
+            temp['count'] = ele[4]
+            temp['user_rank'] = shows.index(ele) + 1
+            if ele[0].user_id == user_id:
+                user_rank = temp['rank']
+            rankBuf.append(temp)
+        if user_rank == '':
+            user_rank = len(shows) + 1
         user_infor = {}
-        user_infor['count'] = devData.query.filter_by(user_id=id).count()
-        user_infor['user_rank'] = user_rank + 1
+        user_infor['user_rank'] = user_rank
+        user_infor['count'] = devData.query.filter_by(user_id=user_id).count()
+        ten_rank = rankBuf[:10] if len(rankBuf) > 10 else rankBuf
         result['user_infor'] = user_infor
-        for i in range(len(ten_rank)):
-            ten_rank[i]['user_rank'] = str(i + 1)
         result['ten_rank'] = ten_rank
-        return {"status": "success", 'data': result}
+        return {'status': 'success', 'data': result}
+        # if len(shows) == 0:
+        #     return {"mesge": "暂时无数据"}
+        # rank_container = []
+        # for show in shows:
+        #     rank_container.append(show.user_id)
+        # if int(user_id) not in rank_container:
+        #     user_rank = len(shows)
+        # else:
+        #     user_rank = rank_container.index(int(user_id))
+        # ten_rank = []
+        # buf = []
+        # if len(rank_container) < 10:
+        #     buf = rank_container
+        # else:
+        #     buf = rank_container[: 10]
+        # for id in buf:
+        #     temp = {}
+        #     record = User.query.filter_by(id=id).first()
+        #     temp['user_id'] = id
+        #     rerd = picStr.query.filter_by(
+        #         user_id=str(id)).first()
+        #     if rerd is None:
+        #         continue
+        #     temp['img'] = rerd.img
+        #     temp['name'] = record.name
+        #     temp['province'] = record.province
+        #     temp['count'] = devData.query.filter_by(user_id=id).count()
+        #     temp['username'] = record.username
+        #     ten_rank.append(temp)
+        # result = {}
+        # user_infor = {}
+        # user_infor['count'] = devData.query.filter_by(user_id=id).count()
+        # user_infor['user_rank'] = user_rank + 1
+        # result['user_infor'] = user_infor
+        # for i in range(len(ten_rank)):
+        #     ten_rank[i]['user_rank'] = str(i + 1)
+        # result['ten_rank'] = ten_rank
+        # print datetime.datetime.now()
+        # return {"status": "success", 'data': result}
 
 
 class get_bonus(Resource):
