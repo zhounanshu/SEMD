@@ -86,7 +86,7 @@ class Rank(Resource):
         if user_rank == 0:
             user_rank = len(shows) + 1
         user_infor = {}
-        user_infor['user_rank'] = user_rank
+        user_infor['user_rank'] = int(user_rank)
         print datetime.datetime.now()
         user_infor['count'] = user_count
         print datetime.datetime.now()
