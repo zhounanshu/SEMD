@@ -67,7 +67,8 @@ class Rank(Resource):
             return {"mesge": "暂时无数据"}
         result = {}
         rankBuf = []
-        user_rank = ''
+        user_rank = 0
+        user_count = 0
         for ele in shows:
             temp = {}
             temp['user_id'] = ele[0].user_id
@@ -77,15 +78,18 @@ class Rank(Resource):
             temp['province'] = ele[3]
             temp['username'] = ele[2]
             temp['count'] = ele[4]
-            temp['user_rank'] = shows.index(ele) + 1
-            if ele[0].user_id == user_id:
-                user_rank = temp['rank']
+            temp['user_rank'] = str(shows.index(ele) + 1)
+            if int(temp['user_id']) == int(user_id):
+                user_rank = temp['user_rank']
+                user_count = ele[4]
             rankBuf.append(temp)
-        if user_rank == '':
+        if user_rank == 0:
             user_rank = len(shows) + 1
         user_infor = {}
         user_infor['user_rank'] = user_rank
-        user_infor['count'] = devData.query.filter_by(user_id=user_id).count()
+        print datetime.datetime.now()
+        user_infor['count'] = user_count
+        print datetime.datetime.now()
         ten_rank = rankBuf[:10] if len(rankBuf) > 10 else rankBuf
         result['user_infor'] = user_infor
         result['ten_rank'] = ten_rank

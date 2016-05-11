@@ -10,8 +10,6 @@ from ..weather.config import *
 from ..models import *
 from ..lib.util import *
 from ..login.views import auth
-import types
-
 
 def isValid(data):
     flag = 0
