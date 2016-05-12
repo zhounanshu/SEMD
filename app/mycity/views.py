@@ -142,7 +142,6 @@ class reltiPeople(Resource):
         end_time = base_time.strftime('%Y-%m-%d %H:%M:%S')
         data_list = devData.query.filter(devData.datatime >= start_time,
                                          devData.datatime <= end_time).all()
-        end_time = datetime.datetime.now()
         device_real = []
         if len(data_list) != 0:
             user_list = []

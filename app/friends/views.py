@@ -96,6 +96,12 @@ class friendInfor(Resource):
                 id=person.friend_id).first().name
             friend_infor['province'] = User.query.filter_by(
                 id=person.friend_id).first().province
+            update = ''
+            record = devData.query.filter_by(user_id=person.friend_id).order_by(
+                devData.datatime.desc()).limit(1).first()
+            if record is not None:
+                update = record.datatime
+            friend_infor['update'] = update
             names.append(friend_infor)
         temp = {}
         temp['friends'] = names
