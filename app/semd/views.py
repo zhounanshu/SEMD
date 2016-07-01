@@ -328,7 +328,7 @@ def senHour(id, tAxis, item):
         step = abs(strTotsp(datatime) - strTotsp(tAxis))
         steps.append(step)
     minStep = steps[0]
-    for i in xrange(1, len(steps)-1):
+    for i in xrange(1, len(steps) - 1):
         if minStep > steps[i]:
             minStep = steps[i]
     result[item] = records[steps.index(minStep)][item]

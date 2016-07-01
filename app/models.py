@@ -122,9 +122,10 @@ class foreWeather(db.Model):
     weather = db.Column(db.String(255), nullable=False)
     weatherpic = db.Column(db.String(255), nullable=False)
     area = db.Column(db.String(255), nullable=False)
+    acquire_time = db.Column(db.String(255), nullable=False)
 
     def __init__(self, datatime, view_time, direction,
-                 speed, tempe, weather, weatherpic, area):
+                 speed, tempe, weather, weatherpic, area, acquire_time):
         self.datatime = datatime
         self.view_time = view_time
         self.direction = direction
@@ -133,6 +134,7 @@ class foreWeather(db.Model):
         self.weather = weather
         self.weatherpic = weatherpic
         self.area = area
+        self.acquire_time = acquire_time
 
 
 class cityAlarm(db.Model):

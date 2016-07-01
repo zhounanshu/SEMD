@@ -11,6 +11,7 @@ from ..models import *
 from ..lib.util import *
 from ..login.views import auth
 
+
 def isValid(data):
     flag = 0
     for key in data.keys():
@@ -161,7 +162,8 @@ class reltiPeople(Resource):
                 for value in result1:
                     try:
                         if distance(float(user['latitude']),
-                                    float(user['longitude']), float(value['latitude']),
+                                    float(user['longitude']), float(
+                                        value['latitude']),
                                     float(value['longitude'])) <= 1000:
                             post_num += 1
                     except:

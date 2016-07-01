@@ -408,8 +408,12 @@ class get_forecast(Resource):
         req = urllib2.Request(forecast_url, headers=header)
         response = urllib2.urlopen(req).read()
         response = json.loads(response)
+        # records = foreWeather.query.order_by(
+        #     foreWeather.acquire_time.desc()).limit(10)
+        # response = to_json_list(records)
         result = []
         for n in response:
+            del n['acquire_time'], n['id'], n['view_time'], n['area']
             temp = []
             weather_state = n['weatherpic']
             if weather_state.find('有'.decode('utf8')) == -1:
@@ -714,7 +718,6 @@ class threeHour(Resource):
         response = json.loads(response)['data']['content']
         result = response.split('\r\n')[2]
         temp = re.findall(r"本市：(.*?)，", result.encode('utf8'))
-        print temp
         weather = ''
         if len(temp) != 0:
             weather = temp[0]
