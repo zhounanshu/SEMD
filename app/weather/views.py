@@ -632,8 +632,15 @@ class weatherLocation(Resource):
                   "Content-Type": " application/json"}
         url = loca_url + "jd=" + jd + '&' + "wd=" + wd
         req = urllib2.Request(url, headers=header)
-        response = urllib2.urlopen(req).read()
-        result = json.loads(response)
+        resp = urllib2.urlopen(req)
+        code = resp.getcode()
+        response = resp.read()
+        default = {'wind_speed': '0.8', 'name': '\u9648\u5bb6\u89d2',
+                   'tempe': '27', 'wind_direction': '29', 'rain': '0',
+                   'datetime': '2026-12-12 00:00', 'pressure': '1004.8',
+                   'humi': '84', 'visibility': '35000'}
+        result = json.loads(response) if (
+            code == 200 and json.loads(response) != {}) else default
         temp = {}
         pattern_d = re.compile('\d{4}-\d{2}-\d{2}.*?')
         pattern_h = re.compile('\d{2}:\d{2}:\d{2}.*?')
