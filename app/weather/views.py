@@ -723,7 +723,7 @@ class threeHour(Resource):
         req = urllib2.Request(three_hour, headers=header)
         response = urllib2.urlopen(req).read()
         response = json.loads(response)['data']['content']
-        result = response.split('\r\n')[2]
+        result = response.split('\n')[2]
         temp = re.findall(r"本市：(.*?)，", result.encode('utf8'))
         weather = ''
         if len(temp) != 0:
